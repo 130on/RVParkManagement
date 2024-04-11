@@ -28,3 +28,5 @@ If someone updated the master branch, AND YOU DO HAVE CHANGES THAT YOU NEVER COM
 
 Isaac's directory was being wack, so I had to use this: git config --global --add safe.directory 'C:/Users/iporter/Documents/School - Weber/CS 3750/RVPark'
 to give myself permissions
+
+COOL!!!
