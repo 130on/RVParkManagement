@@ -25,8 +25,16 @@ If someone updated the master branch, AND YOU DO HAVE CHANGES THAT YOU NEVER COM
 - git switch master - this will switch your local branch to the local master branch (what your computer thinks is the remote master branch)
 - git fetch origin - this will fetch the new changes made to the master branch, comparing it to your old master branch that you first pulled from
 - git merge origin/master - this will attempt to merge (replace) your old local master branch, with the new remote master branch (one on github)
+  Once that is done, now you can merge your personal branch with the "new" master branch
+- git fetch origin - (I just do it because)
+- git checkout master
+- git pull origin master
+- git checkout <your_branch_name>
+- git merge master
+- You will then have to update your branch immediately I believe, using the Visual Studio "Source Control" stuff, I could not find a way to do it through the terminal
 
 Isaac's directory was being wack, so I had to use this: git config --global --add safe.directory 'C:/Users/iporter/Documents/School - Weber/CS 3750/RVPark'
 to give myself permissions
+
 
 COOL!!!
