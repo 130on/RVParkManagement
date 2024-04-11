@@ -19,5 +19,10 @@ If someone updated the master branch, and you dont have any changes you want to 
 - git pull origin master - this will pull all of the changes from the master branch into your local repo
 - git checkout -b yourname/branchName - this will again switch your current local repo to be apart of a different branch that is not the master branch. So when updating the remote repo, it does not affect the master branch.
 
+If someone updated the master branch, AND YOU DO HAVE CHANGES THAT YOU NEVER COMMITTED AND PUSHED, look below:
+- git switch master - this will switch your local branch to the local master branch (what your computer thinks is the remote master branch)
+- git fetch origin - this will fetch the new changes made to the master branch, comparing it to your old master branch that you first pulled from
+- git merge origin/master - this will attempt to merge (replace) your old local master branch, with the new remote master branch (one on github)
+
 Isaac's directory was being wack, so I had to use this: git config --global --add safe.directory 'C:/Users/iporter/Documents/School - Weber/CS 3750/RVPark'
 to give myself permissions
