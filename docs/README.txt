@@ -37,4 +37,4 @@ Isaac's directory was being wack, so I had to use this: git config --global --ad
 to give myself permissions
 
 
-COOL!!!
+COOL!
