@@ -10,7 +10,7 @@ git commands
 - git branch yourname/branchName - creates a branch
 - git branch -d yourname/branchName - deletes a local branch
 
-This is the 
+These are the default commands for uploading your branch to the remote repository
 - git checkout -b yourname/branchName - this will create a branch (if not already created) and switch to it on your local repo. Setting it up to be committed.
 - git add . or filename - this will add whatever file or all files into a "commit" to then be able to push it to the remote repo
 - git commit -m "Message" - This will commit your changes with a message
