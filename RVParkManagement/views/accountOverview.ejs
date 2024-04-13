@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Overview</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css">
+    <style>
+        .container-fluid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rounded {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid vh-100" style="margin-top:10px">
+        <div class="rounded">
+            <div class="shadow-lg p-5 bg-light">
+                <div class="text-center">
+                    <h3 class="text-dark">Account Details</h3>
+                </div>
+                <div class="p-4">
+                    <div>
+                        <p id="message" class="text-danger"></p>
+                        <!--PROBLEM MESSAGE GOES HERE-->
+                      <div>
+                        <div>
+                          <p><strong>First Name:</strong> Johnny</p>
+                          <p><strong>Last Name:</strong> Appleseed</p>
+                          <p><strong>Phone Number:</strong> 123-456-7890</p>
+                          <p><strong>Rank:</strong> Captain</p>
+                          <p><strong>DOD Affiliation:</strong> Army</p>
+                          <p><strong>DOD Status:</strong> Active</p>
+                      </div>
+                      
+                      </div>
+                        <div class="d-flex justify-content-between button-container" style="padding-bottom: 10px">
+                            <div class="text-left">
+                                <a class="btn btn-primary" href="/reservationHistory">
+                                    Reservation History
+                                </a>
+                            </div>
+                            <div class="text-right">
+                                <a class="btn btn-primary" href="/manageReservations">
+                                    Manage Active Reservations
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between button-container">
+                            <div class="text-left">
+                                <a class="btn btn-primary" href="/support">
+                                    Contact Support
+                                </a>
+                            </div>
+                            <div class="text-right">
+                                <a class="btn btn-primary" href="/changepassword">
+                                    Change Password
+                                </a>
+                            </div>
+                        </div>
+                        <!-- <p class="text-center mt-5">Don't have an account?
+                            <span class="text-primary"><a href="/register">Sign Up</a></span> -->
+                        </p>
+                    </div>
+                    <div class="justify-content-left">
+                        Current user: <%- locals.session.username %>
+                        <a href="/logout"><button class="btn btn-primary text-center float-end" type="button">Logout</button></a>
+                    </div>
+                    
+                </div>
+                <p class="text-center mt-5">
+                  <span class="text-primary"><a href="/">Go Back?</a></span>
+              </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

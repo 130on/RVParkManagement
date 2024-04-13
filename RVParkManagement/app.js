@@ -7,7 +7,15 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var loginUserRouter = require('./routes/loginuser');
+var registerRouter = require('./routes/register');
+var accountOverview = require('./routes/accountOverview');
+var changePassword = require('./routes/changePassword');
+var manageReservations = require('./routes/manageReservations')
+var reservationHistory = require('./routes/reservationHistory');
+var confirmationPage = require('./routes/confirmationPage');
+
+
 
 var app = express();
 
@@ -50,7 +58,15 @@ app.use(function(req, res, next) {
 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/loginuser', loginUserRouter);
+app.use('/register', registerRouter);
+app.use('/accountOverview', accountOverview);
+app.use('/changePassword', changePassword);
+app.use('/manageReservations', manageReservations);
+app.use('/reservationHistory', reservationHistory);
+app.use('/confirmationPage', confirmationPage);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
