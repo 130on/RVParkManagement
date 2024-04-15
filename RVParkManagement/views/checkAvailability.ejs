@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Availability</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css" />
+  <script type="text/javascript" src="crypto-js.js"></script>
+  <script>
+    function showRVSizeInput() {
+      var type = document.getElementById("type");
+      var rvSizeInput = document.getElementById("rvSizeInput");
+      if (type.value === "RV Parking") {
+        rvSizeInput.style.display = "";
+      } else {
+        rvSizeInput.style.display = "none";
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container-fluid vh-100" style="margin-top:10px">
+    <div class="" style="margin-top:100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+          <div class="text-center">
+            <h3 class="text-primary">Check Availability</h3>
+          </div>
+          <form method="post">
+            <div class="p-4">
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
+                <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
+                  <option value="RV Parking">RV Parking</option>
+                  <option value="Tenting">Tenting</option>
+                  <option value="Dry Camping">Dry Camping</option>
+                  <option value="Storage">Storage</option>
+                </select>
+              </div>
+              <div id="rvSizeInput" class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
+                <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
+              </div>
+              <div id="fromLengthOfStayInput" class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                <input type="text" class="form-control" id="fromLengthOfStay" name="fromLengthOfStay" placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
+              </div>
+              <div id="toLengthOfStayInput" class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                <!-- <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"> -->
+                <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay" placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
+              </div>              
+              <div>
+                <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
+              </div>
+              <div class="text-center">
+                <button class="btn btn-primary mt-2" type="submit">
+                  Search
+                </button>
+              </div>
+              <p class="text-center mt-5">
+                <span class="text-primary"><a href="/">Go Back?</a></span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

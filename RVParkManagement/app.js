@@ -9,11 +9,14 @@ var MySQLStore = require('express-mysql-session')(session);
 var indexRouter = require('./routes/index');
 var loginUserRouter = require('./routes/loginuser');
 var registerRouter = require('./routes/register');
-var accountOverview = require('./routes/accountOverview');
-var changePassword = require('./routes/changePassword');
-var manageReservations = require('./routes/manageReservations')
-var reservationHistory = require('./routes/reservationHistory');
-var confirmationPage = require('./routes/confirmationPage');
+var accountOverviewRouter = require('./routes/accountOverview');
+var changePasswordRouter = require('./routes/changePassword');
+var manageReservationsRouter = require('./routes/manageReservations')
+var reservationHistoryRouter = require('./routes/reservationHistory');
+var confirmationRouter = require('./routes/confirmation');
+var checkAvailabilityRouter = require('./routes/checkAvailability');
+var reservationRouter = require('./routes/reservation');
+var paymentRouter = require('./routes/payment');
 
 
 
@@ -60,11 +63,15 @@ app.use(function(req, res, next) {
 app.use('/', indexRouter);
 app.use('/loginuser', loginUserRouter);
 app.use('/register', registerRouter);
-app.use('/accountOverview', accountOverview);
-app.use('/changePassword', changePassword);
-app.use('/manageReservations', manageReservations);
-app.use('/reservationHistory', reservationHistory);
-app.use('/confirmationPage', confirmationPage);
+app.use('/accountOverview', accountOverviewRouter);
+app.use('/changePassword', changePasswordRouter);
+app.use('/manageReservations', manageReservationsRouter);
+app.use('/reservationHistory', reservationHistoryRouter);
+app.use('/confirmation', confirmationRouter);
+app.use('/checkAvailability', checkAvailabilityRouter);
+app.use('/reservation', reservationRouter);
+app.use('/payment', paymentRouter);
+
 
 
 
