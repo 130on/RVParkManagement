@@ -17,14 +17,9 @@ var confirmationRouter = require('./routes/confirmation');
 var checkAvailabilityRouter = require('./routes/checkAvailability');
 var reservationRouter = require('./routes/reservation');
 var paymentRouter = require('./routes/payment');
-<<<<<<< HEAD
 var homeRouter = require('./routes/home');
-
-
-=======
 var adminViewRouter = require('./routes/adminView.js');
 var employeeViewRouter = require('./routes/employeeView.js');
->>>>>>> origin/master
 
 var app = express();
 
@@ -78,13 +73,9 @@ app.use('/confirmation', confirmationRouter);
 app.use('/checkAvailability', checkAvailabilityRouter);
 app.use('/reservation', reservationRouter);
 app.use('/payment', paymentRouter);
-<<<<<<< HEAD
 app.use('/home', homeRouter);
-
-=======
 app.use('/adminView', adminViewRouter);
 app.use('/employeeView', employeeViewRouter);
->>>>>>> origin/master
 
 
 
