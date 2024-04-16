@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/styles.css"> 
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 250px;
+        }
+
+        .card h2 {
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .card a {
+            background-color: #007bff;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .card a:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+
+
+
+
+</head>
+<body>
+    <header>
+        <h1>Welcome Admin!</h1>
+    </header>
+    <main>
+        <div class="card">
+            <h2>Modify Reservation</h2>
+            <p>Make changes to existing reservations.</p>
+            <a href="/admin/modify-reservation">Modify Reservation</a>
+        </div>
+        <div class="card">
+            <h2>Change Account Info</h2>
+            <p>Update Customer account information.</p>
+            <a href="/admin/change-account-info">Change Account Info</a>
+        </div>
+        <div class="card">
+            <h2>Change Customer Password</h2>
+            <p>Reset password for customer.</p>
+            <a href="/admin/change-customer-password">Change Customer Password</a>
+        </div>
+        <div class="card">
+            <h2>Generate Report</h2>
+            <p>Generate reports for insights and summary of customer reservation.</p>
+            <a href="/admin/generate-report">Generate Report</a>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 RV Park Management</p>
+    </footer>
+</body>
+</html>
