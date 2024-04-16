@@ -173,7 +173,7 @@ function createTables() {
         console.log(err.message);
         throw err;
     } else {
-      console.log("database.js: payments created if it didn't exist");
+      console.log("database.js: sites created if it didn't exist");
     }
     }); 
 }
