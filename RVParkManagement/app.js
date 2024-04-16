@@ -17,6 +17,7 @@ var confirmationRouter = require('./routes/confirmation');
 var checkAvailabilityRouter = require('./routes/checkAvailability');
 var reservationRouter = require('./routes/reservation');
 var paymentRouter = require('./routes/payment');
+var homeRouter = require('./routes/home');
 
 
 
@@ -43,18 +44,18 @@ var dbSessionPool = require('./lib/sessionPool.js');
 var sessionStore = new MySQLStore({}, dbSessionPool);
 // Necessary middleware to store session cookies in MySQL
 app.use(session({
-    key: 'session_cookie_name',
-    secret: 'session_cookie_secret1234',
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-  cookie : {
+  key: 'session_cookie_name',
+  secret: 'session_cookie_secret1234',
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
     sameSite: 'strict'
   }
 }));
 
 // Middleware to make session variables available in .ejs template files
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.session = req.session;
   next();
 });
@@ -71,17 +72,18 @@ app.use('/confirmation', confirmationRouter);
 app.use('/checkAvailability', checkAvailabilityRouter);
 app.use('/reservation', reservationRouter);
 app.use('/payment', paymentRouter);
+app.use('/home', homeRouter);
 
 
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
