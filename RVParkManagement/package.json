@@ -16,7 +16,10 @@
     "express-mysql-session": "^2.1.8",
     "express-session": "^1.18.0",
     "http-errors": "~1.6.3",
+    "icons": "^1.0.0",
     "morgan": "~1.9.1",
-    "mysql2": "^3.9.4"
+    "mysql": "^2.18.1",
+    "mysql2": "^3.9.4",
+    "session": "^0.1.0"
   }
 }

@@ -1,11 +1,138 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p><%= title %></p>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="/styles.css"> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+
+        .index-image {
+            width: 80%;
+            max-width: 1200px;
+            height: 400px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .dashboard-option {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .dashboard-option h2 {
+            color: #333;
+        }
+
+        .dashboard-option p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-option a {
+            background-color: #007bff;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .dashboard-option a:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to our RV Park!</h1>
+    </header>
+    <main>
+        <div class="welcome-message">
+           
+            <p>We're glad you're here. Start your journey by making a reservation or modifying an existing one.</p>
+        </div>
+        <img src="https://st2.depositphotos.com/1203257/6378/i/450/depositphotos_63787985-stock-photo-travel-trailer-camping.jpg" alt="Index-Image" class="index-image">
+        <div class="dashboard-options">
+            <div class="dashboard-option">
+                <h2>Make Reservation</h2>
+                <p>Book your RV parking spot.</p>
+                <a href="/RVParkManagement/views/reservation.ejs">Make Reservation</a>
+            </div>
+            <div class="dashboard-option">
+                <h2>Modify Reservation</h2>
+                <p>Update your existing reservation.</p>
+                <a href="/customer/modify-reservation">Modify Reservation</a>
+            </div>
+            <div class="dashboard-option">
+                <h2>Change Account Info</h2>
+                <p>Update customer account information.</p>
+                <a href="/customer/change-account-info">Change Account Info</a>
+            </div>
+            <div class="dashboard-option">
+                <h2>Change Password</h2>
+                <p>Reset your customer password.</p>
+                <a href="/RVParkManagement/views/changePassword.ejs">Change Password</a>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+    </main>
+    <footer>
+        <p>&copy; 2024 RV Park Management</p>
+    </footer>
+</body>
 </html>
