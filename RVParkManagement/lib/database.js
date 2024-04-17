@@ -83,18 +83,23 @@ function createTables() {
 
     //We can make tables to pull from for Rank, DOD_Affiliation, and DOD_Status later, to avoid inconsistent data
     sql = "CREATE TABLE IF NOT EXISTS users (\n" +
+                "username varchar(45) NOT NULL,\n"+
                 "email VARCHAR(255) NOT NULL,\n" +
-                "hashed_password VARCHAR(255) NOT NULL,\n" +
-                "salt VARCHAR(255) NOT NULL,\n" +
                 "firstName VARCHAR(255) NOT NULL,\n" +
                 "lastName VARCHAR(255) NOT NULL,\n" +
-                "phoneNumber VARCHAR(40),\n" +
-                "military_rank VARCHAR(255) NOT NULL,\n" +
-                "dod_affiliation VARCHAR(255) NOT NULL,\n" +
-                "dod_status VARCHAR(25) NOT NULL,\n" +
+                "hashed_password VARCHAR(255) NOT NULL,\n" +
+                "salt VARCHAR(255) NOT NULL,\n" +
+                "phone_number int,\n" +
+                "street_address VARCHAR(40),\n" +
+                "city VARCHAR(40),\n" +
+                "state VARCHAR(30),\n" +
+                "zip VARCHAR(10),\n" +
+                "dod_affiliation VARCHAR(45) NOT NULL,\n" +
+                "dod_status VARCHAR(45) NOT NULL,\n" +
+                "military_rank VARCHAR(45) NOT NULL,\n" +
                 "user_role_id INT NOT NULL, \n" +
                 "FOREIGN KEY (user_role_id) REFERENCES user_types(user_type_id),\n" +
-                "PRIMARY KEY (email)\n" +
+                "PRIMARY KEY (username)\n" +
               ");";
     con.execute(sql, function(err, results, fields) {
       if (err) {
@@ -105,10 +110,87 @@ function createTables() {
       }
     });
 
+
+        //Like RV Parking or Tent Reservation
+    sql = "CREATE TABLE IF NOT EXISTS reservation_types (\n" +
+                "reservation_type_id INT NOT NULL AUTO_INCREMENT, \n" +
+                "reservation_type VARCHAR(45) NOT NULL,\n" +
+                "reservation_type_description VARCHAR(255), \n" +
+                "PRIMARY KEY (reservation_type_id)\n" +
+              ");";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: table reservation_types created if it didn't exist");
+      }
+    });
+
+
+    sql = "CREATE TABLE IF NOT EXISTS sites (\n" +
+            "site_id INT NOT NULL,\n" +
+            "reservation_type_id INT NOT NULL, \n" +
+            "max_size int NOT NULL, \n" +
+            "site_status VARCHAR(45) NOT NULL, \n" +
+            "PRIMARY KEY (site_id), \n" +
+            "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
+          ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+    } else {
+      console.log("database.js: sites created if it didn't exist");
+    }
+    }); 
+
+
+    sql = "CREATE TABLE IF NOT EXISTS managing_sites_log (\n" +
+            "log_id INT NOT NULL AUTO_INCREMENT,\n" +
+            "username VARCHAR(45) NOT NULL, \n" +
+            "site_id int NOT NULL, \n" +
+            "log_date date NOT NULL, \n" +
+            "note VARCHAR(255) NOT NULL, \n" +
+            "PRIMARY KEY (log_id), \n" +
+            "FOREIGN KEY (username) REFERENCES users(username),\n" +
+            "FOREIGN KEY (site_id) REFERENCES sites(site_id)\n" +
+          ")";
+      con.execute(sql, function(err, results, fields) {
+        if (err) {
+          console.log(err.message);
+          throw err;
+      } else {
+        console.log("database.js: managingSitesLog created if it didn't exist");
+      }
+      }); 
+
+    sql = "CREATE TABLE IF NOT EXISTS payments (\n" +
+                "payment_id INT NOT NULL AUTO_INCREMENT,\n" +
+                "card_number INT(12) NOT NULL, \n" +
+                "amount DECIMAL(15,2) NOT NULL, \n" +
+                "payment_date DATE NOT NULL, \n" +
+                "payment_status VARCHAR(45) NOT NULL, \n" +
+                "reason VARCHAR(45) NOT NULL, \n" +
+                "username VARCHAR(45) NOT NULL, \n" +
+                "PRIMARY KEY (payment_id), \n" +
+                "FOREIGN KEY (username) REFERENCES users(username)\n" +
+              ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+    } else {
+      console.log("database.js: payments created if it didn't exist");
+      }
+    }); 
+
+
     //Like RV Parking or Tent Reservation
     sql = "CREATE TABLE IF NOT EXISTS reservation_types (\n" +
                 "reservation_type_id INT NOT NULL AUTO_INCREMENT, \n" +
                 "reservation_type VARCHAR(45) NOT NULL,\n" +
+                "reservation_type_description VARCHAR(255), \n" +
                 "PRIMARY KEY (reservation_type_id)\n" +
               ");";
     con.execute(sql, function(err, results, fields) {
@@ -121,19 +203,22 @@ function createTables() {
     });
 
         sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
-                "reservation_id INT(12) ZEROFILL NOT NULL AUTO_INCREMENT,\n" +
-                "email VARCHAR(255) NOT NULL,\n" +
-                "rv_size DECIMAL(5,2) NOT NULL, \n" +
-                "site_id INT NOT NULL, \n" +
-                "date_of_reservation DATE NOT NULL, \n" +
-                "from_date DATE NOT NULL, \n" +
-                "to_date DATE NOT NULL, \n" +
-                "reservation_status varchar(45) NOT NULL, \n" +
+                "reservation_id INT NOT NULL AUTO_INCREMENT,\n" +
+                "username VARCHAR(45) NOT NULL,\n" +
                 "reservation_type_id INT NOT NULL, \n" +
+                "site_id INT NOT NULL, \n" +
+                "payment_id INT NOT NULL, \n" +
+                "rv_size DECIMAL(5,2) NOT NULL, \n" +
+                "date_of_reservation DATE NOT NULL, \n" +
+                "reservation_status varchar(45) NOT NULL, \n" +
+                "from_date DATE NOT NULL, \n" +
+                "to_date DATE NOT NULL, \n" +                
                 "PRIMARY KEY (reservation_id), \n" +
-                "FOREIGN KEY (email) REFERENCES users(email),\n" +
-                "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
-              ")";
+                "FOREIGN KEY (username) REFERENCES users(username),\n" +
+                "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id),\n" +
+                "FOREIGN KEY (site_id) REFERENCES sites(site_id),\n" +
+                "FOREIGN KEY (payment_id) REFERENCES payments(payment_id)\n" +
+                ")";
     con.execute(sql, function(err, results, fields) {
       if (err) {
         console.log(err.message);
@@ -143,41 +228,7 @@ function createTables() {
       }
     }); 
 
-        sql = "CREATE TABLE IF NOT EXISTS payments (\n" +
-            "payment_id INT NOT NULL AUTO_INCREMENT,\n" +
-            "card_number INT(12) NOT NULL, \n" +
-            "amount DECIMAL(15,2) NOT NULL, \n" +
-            "payment_date DATE NOT NULL, \n" +
-            "reason VARCHAR(45) NOT NULL, \n" +
-            "email VARCHAR(255) NOT NULL, \n" +
-            "PRIMARY KEY (payment_id) \n" +
-          ")";
-    con.execute(sql, function(err, results, fields) {
-      if (err) {
-        console.log(err.message);
-        throw err;
-    } else {
-      console.log("database.js: payments created if it didn't exist");
-    }
-    }); 
-
-        sql = "CREATE TABLE IF NOT EXISTS sites (\n" +
-            "site_id INT NOT NULL,\n" +
-            "reservation_type_id INT NOT NULL, \n" +
-            "hookups BOOL NOT NULL, \n" +
-            "PRIMARY KEY (site_id), \n" +
-            "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
-          ")";
-    con.execute(sql, function(err, results, fields) {
-      if (err) {
-        console.log(err.message);
-        throw err;
-    } else {
-      console.log("database.js: sites created if it didn't exist");
-    }
-    }); 
-}
-
+  }
 
 function addDummyData(){
 
