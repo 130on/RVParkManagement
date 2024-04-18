@@ -29,19 +29,19 @@ con.connect(function (err) {
 });
 
 function selectDatabase() {
-  let sql = "USE RVPark";
-  con.query(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: Selected RVPark database");
-      createTables();
-      //createStoredProcedures();
-      //addTableData();
-      //addDummyData();
-    }
-  });
+    let sql = "USE RVPark";
+    con.query(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: Selected RVPark database");
+        createTables();
+        createStoredProcedures();
+        //addTableData();
+        //addDummyData();
+      }
+    });
 }
 
 function createTables() {
@@ -67,197 +67,202 @@ function createTables() {
   // });
 
 
-  let sql = "CREATE TABLE IF NOT EXISTS user_types (\n" +
-    "user_type_id INT NOT NULL AUTO_INCREMENT, \n" +
-    "user_type VARCHAR(25) NOT NULL,\n" +
-    "PRIMARY KEY (user_type_id)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
+    let sql = "CREATE TABLE IF NOT EXISTS user_types (\n" +
+              "user_type_id INT NOT NULL AUTO_INCREMENT, \n" +
+              "user_type VARCHAR(25) NOT NULL,\n" +
+              "PRIMARY KEY (user_type_id)\n" +
+              ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: table user types created if it didn't exist");
+      }
+    }); 
+
+    //We can make tables to pull from for Rank, DOD_Affiliation, and DOD_Status later, to avoid inconsistent data
+    sql = "CREATE TABLE IF NOT EXISTS users (\n" +
+                "user_id INT(6) ZEROFILL NOT NULL AUTO_INCREMENT,\n"+
+                "username varchar(45) NOT NULL,\n"+
+                "first_name VARCHAR(255) NOT NULL,\n" +
+                "last_name VARCHAR(255) NOT NULL,\n" +
+                "email VARCHAR(255) NOT NULL,\n" +
+                "hashed_password VARCHAR(255) NOT NULL,\n" +
+                "salt VARCHAR(255) NOT NULL,\n" +
+                "phone_number INT,\n" +
+                "street_address VARCHAR(40),\n" +
+                "city VARCHAR(40),\n" +
+                "state VARCHAR(30),\n" +
+                "zip VARCHAR(10),\n" +
+                "military_rank VARCHAR(45) NOT NULL,\n" +
+                "dod_affiliation VARCHAR(45) NOT NULL,\n" +
+                "dod_status VARCHAR(45) NOT NULL,\n" +
+                "user_role_id INT NOT NULL, \n" +
+                "FOREIGN KEY (user_role_id) REFERENCES user_types(user_type_id),\n" +
+                "PRIMARY KEY (user_id)\n" +
+              ");";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: table users created if it didn't exist");
+      }
+    });
+
+
+        //Like RV Parking or Tent Reservation
+    sql = "CREATE TABLE IF NOT EXISTS reservation_types (\n" +
+                "reservation_type_id INT NOT NULL AUTO_INCREMENT, \n" +
+                "reservation_type VARCHAR(45) NOT NULL,\n" +
+                "reservation_type_description VARCHAR(255), \n" +
+                "PRIMARY KEY (reservation_type_id)\n" +
+              ");";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: table reservation_types created if it didn't exist");
+      }
+    });
+
+
+    sql = "CREATE TABLE IF NOT EXISTS sites (\n" +
+            "site_id INT NOT NULL AUTO_INCREMENT,\n" +
+            "site_number INT NOT NULL,\n" +
+            "max_size int, \n" +
+            "price_per_night INT NOT NULL, \n" +
+            "site_status VARCHAR(45) NOT NULL, \n" + 
+            "reservation_type_id INT NOT NULL, \n" +
+            "PRIMARY KEY (site_id), \n" +
+            "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
+          ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
     } else {
-      console.log("database.js: user types created if it didn't exist");
+      console.log("database.js: table sites created if it didn't exist");
     }
-  });
+    }); 
 
-  //We can make tables to pull from for Rank, DOD_Affiliation, and DOD_Status later, to avoid inconsistent data           // Could also have a dropdown with values that we predefine and capture in the form (Alon)
-  sql = "CREATE TABLE IF NOT EXISTS users (\n" +
-    "userId INT NOT NULL AUTO_INCREMENT,\n" +
-    "firstName VARCHAR(255) NOT NULL,\n" +
-    "lastName VARCHAR(255) NOT NULL,\n" +
-    "userName VARCHAR(255) NOT NULL,\n" +
-    "email VARCHAR(255) NOT NULL,\n" +
-    "hashed_password VARCHAR(255) NOT NULL,\n" +
-    "salt VARCHAR(255) NOT NULL,\n" +
-    "phoneNumber VARCHAR(40),\n" +
-    "military_rank VARCHAR(255) NOT NULL,\n" +
-    "dod_affiliation VARCHAR(255) NOT NULL,\n" +
-    "dod_status VARCHAR(25) NOT NULL,\n" +
-    "user_role_id INT NOT NULL, \n" +
-    "FOREIGN KEY (user_role_id) REFERENCES user_types(user_type_id),\n" +
-    "PRIMARY KEY (userId)\n" +
-    ");";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
+
+    sql = "CREATE TABLE IF NOT EXISTS managing_sites_log (\n" +
+            "log_id INT NOT NULL AUTO_INCREMENT,\n" +
+            "user_id INT(6) ZEROFILL NOT NULL, \n" +
+            "site_id INT NOT NULL, \n" +
+            "log_date date NOT NULL, \n" +
+            "note VARCHAR(255), \n" +
+            "PRIMARY KEY (log_id), \n" +
+            "FOREIGN KEY (user_id) REFERENCES users(user_id),\n" +
+            "FOREIGN KEY (site_id) REFERENCES sites(site_id)\n" +
+          ")";
+      con.execute(sql, function(err, results, fields) {
+        if (err) {
+          console.log(err.message);
+          throw err;
+      } else {
+        console.log("database.js: table managing_sites_log created if it didn't exist");
+      }
+      }); 
+
+    sql = "CREATE TABLE IF NOT EXISTS payments (\n" +
+                "payment_id INT NOT NULL AUTO_INCREMENT,\n" +
+                "card_number INT(12) NOT NULL, \n" +
+                "amount DECIMAL(15,2) NOT NULL, \n" +
+                "payment_date DATE NOT NULL, \n" +
+                "payment_status VARCHAR(45) NOT NULL, \n" +
+                "reason VARCHAR(45) NOT NULL, \n" +
+                "user_id INT(6) ZEROFILL NOT NULL, \n" +
+                "PRIMARY KEY (payment_id), \n" +
+                "FOREIGN KEY (user_id) REFERENCES users(user_id)\n" +
+              ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
     } else {
-      console.log("database.js: table users created if it didn't exist");
-    }
-  });
+      console.log("database.js: table payments created if it didn't exist");
+      }
+    }); 
 
-  //Like RV Parking or Tent Reservation
-  sql = "CREATE TABLE IF NOT EXISTS reservation_types (\n" +
-    "reservation_type_id INT NOT NULL AUTO_INCREMENT, \n" +
-    "reservation_type VARCHAR(45) NOT NULL,\n" +
-    "reservation_type_description VARCHAR(255) NULL,\n" +
-    "PRIMARY KEY (reservation_type_id)\n" +
-    ");";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: table reservation_types created if it didn't exist");
-    }
-  });
+        sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
+                "reservation_id INT NOT NULL AUTO_INCREMENT,\n" +
+                "user_id INT(6) ZEROFILL NOT NULL,\n" +
+                "reservation_type_id INT NOT NULL, \n" +
+                "site_id INT NOT NULL, \n" +
+                "payment_id INT NOT NULL, \n" +
+                "rv_size DECIMAL(5,2) NOT NULL, \n" +
+                "date_of_reservation DATE NOT NULL, \n" +
+                "reservation_status VARCHAR(45) NOT NULL, \n" +
+                "from_date DATE NOT NULL, \n" +
+                "to_date DATE NOT NULL, \n" +                
+                "PRIMARY KEY (reservation_id), \n" +
+                "FOREIGN KEY (user_id) REFERENCES users(user_id),\n" +
+                "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id),\n" +
+                "FOREIGN KEY (site_id) REFERENCES sites(site_id),\n" +
+                "FOREIGN KEY (payment_id) REFERENCES payments(payment_id)\n" +
+                ")";
+    con.execute(sql, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: table reservations created if it didn't exist");
+      }
+    }); 
 
-  sql = "CREATE TABLE IF NOT EXISTS sites (\n" +
-    "site_id INT NOT NULL AUTO_INCREMENT,\n" +
-    "reservation_type_id INT NOT NULL, \n" +
-    "maxSize INT NOT NULL, \n" +
-    "siteStatus VARCHAR(45), \n" +
-    "pricePerNight INT NOT NULL, \n" +
-    "PRIMARY KEY (site_id), \n" +
-    "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: sites created if it didn't exist");
-    }
-  });
+  }
 
-  sql = "CREATE TABLE IF NOT EXISTS payments (\n" +
-    "payment_id INT NOT NULL AUTO_INCREMENT,\n" +
-    "card_number INT(12) NOT NULL, \n" +
-    "amount DECIMAL(15,2) NOT NULL, \n" +
-    "payment_date DATE NOT NULL, \n" +
-    "payment_status VARCHAR(10) NOT NULL, \n" +
-    "reason VARCHAR(45) NOT NULL, \n" +
-    "userId INT NOT NULL, \n" +
-    "PRIMARY KEY (payment_id), \n" +
-    "FOREIGN KEY (userId) REFERENCES users(userId)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: payments created if it didn't exist");
-    }
-  });
+  function createStoredProcedures() {
 
-  sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
-    "reservation_id INT(12) ZEROFILL NOT NULL AUTO_INCREMENT,\n" +
-    "userId INT NOT NULL,\n" +
-    "reservation_type_id INT NOT NULL, \n" +
-    "site_id INT NOT NULL, \n" +
-    "payment_id INT NOT NULL, \n" +
-    "rv_size DECIMAL(5,2) NOT NULL, \n" +
-    "date_of_reservation DATE NOT NULL, \n" +
-    "reservation_status varchar(45) NOT NULL, \n" +
-    "from_date DATE NOT NULL, \n" +
-    "to_date DATE NOT NULL, \n" +
-    "PRIMARY KEY (reservation_id), \n" +
-    "FOREIGN KEY (userId) REFERENCES users(userId),\n" +
-    "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id),\n" +
-    "FOREIGN KEY (site_id) REFERENCES sites(site_id),\n" +
-    "FOREIGN KEY (payment_id) REFERENCES payments(payment_id)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: reservations created if it didn't exist");
-    }
-  });
+    let sql =
+      "CREATE PROCEDURE IF NOT EXISTS `register_user`(\n" +
+      "IN newFirstName VARCHAR(255),\n" +
+      "IN newLastName VARCHAR(255),\n" +
+      "IN newUserName VARCHAR(255),\n" +
+      "IN newEmail VARCHAR(255),\n" +
+      "IN newHashedPassword VARCHAR(255),\n" +
+      "IN newSalt VARCHAR(255),\n" +
+      "IN newPhoneNumber VARCHAR(40),\n" +
+      "IN newRank VARCHAR(40),\n" +
+      "IN newDodAffiliation VARCHAR(255),\n" +
+      "IN newDodStatus VARCHAR(25),\n" +
+      "IN newUserRoleId INT,\n" +
+      "OUT result INT\n" +
+      ")\n" +
+      "BEGIN\n" +
+      "DECLARE userCount INT;\n" +
+      "SET result = 0;\n" +
+      "SELECT COUNT(*) INTO userCount\n" +
+      "FROM users\n" +
+      "WHERE firstName = newFirstName\n" +
+      "AND lastName = newLastName\n" +
+      "AND email = newEmail\n" +
+      "AND userName = newUserName;\n" +
+      "IF userCount = 0\n" +
+      "THEN \n" +
+      "INSERT INTO users (firstame, lastName, userName, email, hashed_password, salt, phoneNumber, military_rank, dod_affiliation, dod_status, user_role_id)\n" +
+      "VALUES (newFirstName, newLastName, newUserName, newEmail, newHashedPassword, newSalt, newPhoneNumber, newRank, newDodAffiliation, newDodStatus, newUserRoleId);\n" +
+      "SELECT 'User added to the database' AS message;\n" +
+      "SET result = 1;\n" +
+      "ELSE SELECT 'User already exist in the system' AS message;\n" +
+      "END IF;\n" +
+      "END;";
+    con.query(sql, function (err, results, fields) {
+      if (err) {
+        console.log(err.message);
+        throw err;
+      } else {
+        console.log("database.js: procedure register_user created if it didn't exist");
+      }
+    });
+  
+  }
 
-  sql = "CREATE TABLE IF NOT EXISTS manageSiteLogs (\n" +
-    "log_id INT NOT NULL AUTO_INCREMENT,\n" +
-    "userId INT NOT NULL, \n" +
-    "site_id INT NOT NULL, \n" +
-    "log_date DATE NOT NULL, \n" +
-    "note VARCHAR(255) NULL, \n" +
-    "PRIMARY KEY (log_id), \n" +
-    "FOREIGN KEY (userId) REFERENCES users(userId),\n" +
-    "FOREIGN KEY (site_id) REFERENCES sites(site_id)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: manageSiteLog created if it didn't exist");
-    }
-  });
-}
-
-
-function createStoredProcedures() {
-
-  let sql =
-    "CREATE PROCEDURE IF NOT EXISTS `register_user`(\n" +
-    "IN newFirstName VARCHAR(255),\n" +
-    "IN newLastName VARCHAR(255),\n" +
-    "IN newUserName VARCHAR(255),\n" +
-    "IN newEmail VARCHAR(255),\n" +
-    "IN newHashedPassword VARCHAR(255),\n" +
-    "IN newSalt VARCHAR(255),\n" +
-    "IN newPhoneNumber VARCHAR(40),\n" +
-    "IN newRank VARCHAR(40),\n" +
-    "IN newDodAffiliation VARCHAR(255),\n" +
-    "IN newDodStatus VARCHAR(25),\n" +
-    "IN newUserRoleId INT,\n" +
-    "OUT result INT\n" +
-    ")\n" +
-    "BEGIN\n" +
-    "DECLARE userCount INT;\n" +
-    "SET result = 0;\n" +
-    "SELECT COUNT(*) INTO userCount\n" +
-    "FROM users\n" +
-    "WHERE firstName = newFirstName\n" +
-    "AND lastName = newLastName\n" +
-    "AND email = newEmail\n" +
-    "AND userName = newUserName;\n" +
-    "IF userCount = 0\n" +
-    "THEN \n" +
-    "INSERT INTO users (firstame, lastName, userName, email, hashed_password, salt, phoneNumber, military_rank, dod_affiliation, dod_status, user_role_id)\n" +
-    "VALUES (newFirstName, newLastName, newUserName, newEmail, newHashedPassword, newSalt, newPhoneNumber, newRank, newDodAffiliation, newDodStatus, newUserRoleId);\n" +
-    "SELECT 'User added to the database' AS message;\n" +
-    "SET result = 1;\n" +
-    "ELSE SELECT 'User already exist in the system' AS message;\n" +
-    "END IF;\n" +
-    "END;";
-  con.query(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: procedure register_user created if it didn't exist");
-    }
-  });
-
-
-}
-
-
-
-function addDummyData() {
+function addDummyData(){
 
   //5 users
   // "IN  username VARCHAR(255), \n" +
