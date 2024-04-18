@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
+  <link rel="stylesheet"href="/css/allViews.css"/>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css" />
   <script type="text/javascript" src="crypto-js.js"></script>
@@ -18,27 +19,30 @@
       let passwordValid = false;
       let message = "";
       if (password1 == "") {
-          message = "Please enter password";
+        message = "Please enter password";
       } else if (password2 == "") {
-          message = "Please re-enter password";
+        message = "Please re-enter password";
       } else if (password1 != password2) {
-          message = "Passwords didn't match";
+        message = "Passwords didn't match";
       } else {
-          passwordValid = true;
+        passwordValid = true;
       }
       if (!passwordValid) {
-          document.getElementById("message").innerHTML = message;
-          event.preventDefault();
+        document.getElementById("message").innerHTML = message;
+        event.preventDefault();
       } else {
-          let salt = CryptoJS.lib.WordArray.random(8);
-          document.getElementById("salt").value = salt;
-          let hashed = CryptoJS.SHA256(password1 + ":" + salt).toString(CryptoJS.enc.Hex);
-          document.getElementById("hash").value = hashed;
+        let salt = CryptoJS.lib.WordArray.random(8);
+        document.getElementById("salt").value = salt;
+        let hashed = CryptoJS.SHA256(password1 + ":" + salt).toString(CryptoJS.enc.Hex);
+        document.getElementById("hash").value = hashed;
       }
+    }
 
-  }
+    // Function to handle back button click
+    function goBack() {
+      window.history.back(); // Navigate back
+    }
   </script>
-
 </head>
 
 <body>
@@ -46,12 +50,19 @@
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+            <!-- Back button -->
+            <button class="back-button" onclick="goBack()">< Back</button>
           <div class="text-center">
             <h3 class="text-primary">Register New Account</h3>
           </div>
           <form onSubmit="return checkPassword(event);" method="post">
+ 
             <div class="p-4">
-               <div class="input-group mb-3">
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-person-plus-fill text-white"></i></span>
+                <input id="username" name="username" type="text" class="form-control" placeholder="Username">
+              </div>
+              <div class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i class="bi bi-person-plus-fill text-white"></i></span>
                 <input id="firstname" name="firstname" type="text" class="form-control" placeholder="Firstname">
               </div>
@@ -60,21 +71,9 @@
                 <input id="lastname" name="lastname" type="text" class="form-control" placeholder="Lastname">
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
-                <input id="rank" name="rank" type="text" class="form-control" placeholder="Rank">
-              </div>
-              <div class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
-                <input id="dodaffiliation" name="dodaffiliation" type="text" class="form-control" placeholder="DOD Affiliation">
-              </div>
-              <div class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
-                <input id="dodstatus" name="dodstatus" type="text" class="form-control" placeholder="DOD Status">
-              </div>
-              <div class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i class="bi bi-envelope-fill text-white"></i></span>
                 <input id="email" name="email" type="text" class="form-control" placeholder="Email">
-              </div> 
+              </div>
               <div class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i class="bi bi-telephone-fill text-white"></i></span>
                 <input id="phoneNumber" name="phoneNumber" type="text" class="form-control" placeholder="Phone Number">
@@ -87,6 +86,37 @@
                 <span class="input-group-text bg-primary"><i class="bi bi-key-fill text-white"></i></span>
                 <input id="password2" type="password" class="form-control" placeholder="Re-enter Password">
               </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
+                <input id="streetAddress" name="streetAddress" type="text" class="form-control"
+                  placeholder="Street Address">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
+                <input id="city" name="city" type="text" class="form-control" placeholder="City">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
+                <input id="state" name="state" type="text" class="form-control" placeholder="State">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
+                <input id="zip" name="zip" type="text" class="form-control" placeholder="Zip">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
+                <input id="dodaffiliation" name="dodaffiliation" type="text" class="form-control"
+                  placeholder="DOD Affiliation">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
+                <input id="dodstatus" name="dodstatus" type="text" class="form-control" placeholder="DOD Status">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
+                <input id="rank" name="rank" type="text" class="form-control" placeholder="Rank">
+              </div>
+
               <div>
                 <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
               </div>
