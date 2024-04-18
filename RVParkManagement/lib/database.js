@@ -85,9 +85,9 @@ function createTables() {
     sql = "CREATE TABLE IF NOT EXISTS users (\n" +
                 "user_id INT(6) ZEROFILL NOT NULL AUTO_INCREMENT,\n"+
                 "username varchar(45) NOT NULL,\n"+
+                "email VARCHAR(255) NOT NULL,\n" +
                 "first_name VARCHAR(255) NOT NULL,\n" +
                 "last_name VARCHAR(255) NOT NULL,\n" +
-                "email VARCHAR(255) NOT NULL,\n" +
                 "hashed_password VARCHAR(255) NOT NULL,\n" +
                 "salt VARCHAR(255) NOT NULL,\n" +
                 "phone_number INT,\n" +
@@ -95,9 +95,9 @@ function createTables() {
                 "city VARCHAR(40),\n" +
                 "state VARCHAR(30),\n" +
                 "zip VARCHAR(10),\n" +
-                "military_rank VARCHAR(45) NOT NULL,\n" +
                 "dod_affiliation VARCHAR(45) NOT NULL,\n" +
                 "dod_status VARCHAR(45) NOT NULL,\n" +
+                "military_rank VARCHAR(45),\n" +
                 "user_role_id INT NOT NULL, \n" +
                 "FOREIGN KEY (user_role_id) REFERENCES user_types(user_type_id),\n" +
                 "PRIMARY KEY (user_id)\n" +
@@ -194,7 +194,7 @@ function createTables() {
                 "reservation_type_id INT NOT NULL, \n" +
                 "site_id INT NOT NULL, \n" +
                 "payment_id INT NOT NULL, \n" +
-                "rv_size DECIMAL(5,2) NOT NULL, \n" +
+                "rv_size DECIMAL(5,2), \n" +
                 "date_of_reservation DATE NOT NULL, \n" +
                 "reservation_status VARCHAR(45) NOT NULL, \n" +
                 "from_date DATE NOT NULL, \n" +
