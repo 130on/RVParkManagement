@@ -262,6 +262,64 @@ function createStoredProcedures() {
     }
   });
 
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_salt`(\n" +
+    "IN username VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT salt FROM users\n" +
+    "WHERE users.username = username\n" +
+    "LIMIT 1;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_salt created if it didn't exist");
+    }
+  });
+
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `check_credentials`(\n" +
+    "IN username VARCHAR(255),\n" +
+    "IN hashed_password VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT EXISTS(\n" +
+    "SELECT * FROM users\n" +
+    "WHERE users.username = username AND users.hashed_password = hashed_password\n" +
+    ") AS result;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure check_credentials created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `change_password`(\n" +
+    "IN username VARCHAR(255),\n" +
+    "IN new_password_hash VARCHAR(255),\n" +
+    "IN new_password_salt VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "UPDATE users SET users.hashed_password = new_password_hash WHERE users.username = username;\n" +
+    "UPDATE users SET users.salt = new_password_salt WHERE users.username = username;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure change_password created if it didn't exist");
+    }
+  });
+
+
   sql = "CREATE PROCEDURE IF NOT EXISTS `insert_user_type`(\n" +
     "IN user_type VARCHAR(45)\n" +
     ")\n" +
