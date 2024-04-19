@@ -12,7 +12,7 @@ router.post('/', function (req, res, next) {
 
   // Extract form values from the request body
   const type = req.body.type;
-  const rvSize = req.body.rvSize ? req.body.rvSize : null;
+  const rvSize = req.body.rvSize;
     const pricePerNight = req.body.pricePerNight;
   const fromDate = req.body.fromDate;
   const toDate = req.body.toDate;
