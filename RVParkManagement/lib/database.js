@@ -188,6 +188,22 @@ function createTables() {
     }
   });
 
+
+  sql = "CREATE TABLE IF NOT EXISTS reservation_status (\n" +
+    "reservation_status_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "status VARCHAR(45) NOT NULL, \n" +
+    "PRIMARY KEY (reservation_status_id)\n" +
+    ")";
+  con.execute(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: table reservation_status created if it didn't exist");
+    }
+  });
+
+
   sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
     "reservation_id INT NOT NULL AUTO_INCREMENT,\n" +
     "user_id INT(6) ZEROFILL NOT NULL,\n" +
@@ -216,19 +232,7 @@ function createTables() {
   });
 
 
-  sql = "CREATE TABLE IF NOT EXISTS reservation_status (\n" +
-    "reservation_status_id INT NOT NULL AUTO_INCREMENT,\n" +
-    "reservation_status VARCHAR(45) NOT NULL, \n" +
-    "PRIMARY KEY (reservation_status_id)\n" +
-    ")";
-  con.execute(sql, function (err, results, fields) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    } else {
-      console.log("database.js: table reservation_status created if it didn't exist");
-    }
-  });
+
 
 }
 
@@ -375,12 +379,16 @@ function createStoredProcedures() {
     }
   });
 
-  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_reservation_status`(\n" +
-    "IN new_reservation_status VARCHAR(45)\n" +
+  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_reservation_type`(\n" +
+    "IN reservation_type VARCHAR(45)\n" +
     ")\n" +
     "BEGIN\n" +
-    "INSERT INTO reservation_status (reservation_status)\n" +
-    "VALUES (new_reservation_status);\n" +
+    "INSERT INTO reservation_types(reservation_type)\n" +
+    "SELECT reservation_type FROM DUAL\n" +
+    "WHERE NOT EXISTS (\n" +
+    "SELECT * FROM reservation_types\n" +
+    "WHERE reservation_types.reservation_type=reservation_type LIMIT 1\n" +
+    ");\n" +
     "END;";
   con.query(sql, function (err, results, fields) {
     if (err) {
@@ -388,6 +396,138 @@ function createStoredProcedures() {
       throw err;
     } else {
       console.log("database.js: procedure insert_reservation_status created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_reservation_status`(\n" +
+    "IN status VARCHAR(45)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "INSERT INTO reservation_status(status)\n" +
+    "SELECT status FROM DUAL\n" +
+    "WHERE NOT EXISTS (\n" +
+    "SELECT * FROM reservation_status\n" +
+    "WHERE reservation_status.status=status LIMIT 1\n" +
+    ");\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure insert_reservation_status created if it didn't exist");
+    }
+  });
+
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `make_payment`(\n" +
+    "IN new_card_number int,\n" +
+    "IN new_amount decimal(8,2),\n" +
+    "IN new_payment_date DATE,\n" +
+    "IN new_payment_status VARCHAR(10),\n" +
+    "IN new_reason VARCHAR(255),\n" +
+    "IN new_user_id INT\n" +
+    //"OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "INSERT INTO payments (card_number, amount, payment_date, payment_status, reason, user_id)\n" +
+    "VALUES (new_card_number, new_amount, new_payment_date, new_payment_status, new_reason, new_user_id);\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure register_user created if it didn't exist");
+    }
+  });
+
+
+  //variables subject to change based on info that we get (instead of the id, we could get the type and then find the associated id)
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `create_reservation`(\n" +
+    "IN new_user_id INT,\n" +
+    "IN new_reservation_type VARCHAR(45),\n" +
+    "IN new_site_number INT,\n" +
+    "IN new_payment_id INT,\n" +
+    "IN new_rv_size INT,\n" +
+    "IN new_reservation_status_id INT,\n" +
+    "IN new_from_date DATE,\n" +
+    "IN new_to_date DATE\n" +
+    //"OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "INSERT INTO reservations (user_id, reservation_type_id, site_id, payment_id, rv_size, reservation_status_id, from_date, to_date)\n" +
+    "VALUES (new_user_id," +
+    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1),"+
+    "(SELECT site_id FROM sites WHERE sites.site_number = new_site_number LIMIT 1)," +
+    "newEmail, newPhoneNumber, newHashedPassword, newSalt, newStreetAddress, newCity, newState, newZIP, newDodAffiliation, newDodStatus, newRank," +
+    "(SELECT user_type_id FROM user_types WHERE user_types.user_type = newUserRoleId LIMIT 1));\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure register_user created if it didn't exist");
+    }
+  });
+
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `create_site`(\n" +
+    "IN new_site_number INT,\n" +
+    "IN new_max_size INT,\n" +
+    "IN new_price_per_night INT,\n" +
+    "IN new_site_status VARCHAR(45),\n" +
+    "IN new_reservation_type VARCHAR(45),\n" +
+    "OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "DECLARE siteCount INT;\n" +
+    "SET result = 0;\n" +
+    "SELECT COUNT(*) INTO siteCount\n" +
+    "FROM sites\n" +
+    "WHERE site_number = new_site_number;\n" +
+    "IF siteCount = 0\n" +
+    "THEN \n" +
+    "INSERT INTO sites (site_number, max_size, price_per_night, site_status, reservation_type_id)\n" +
+    "VALUES (new_site_number, new_max_size, new_price_per_night, new_site_status," +
+    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1));\n" +
+    "ELSE\n" +
+    "SET result = 1;\n" +
+    "END IF;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure create_site created if it didn't exist");
+    }
+  });
+
+
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `check_availability`(\n" +
+    "IN new_reservation_type VARCHAR(45),\n" +
+    "IN new_size INT,\n" +
+    "IN new_price_per_night INT,\n" +
+    "IN new_from_date DATE,\n" +
+    "IN new_to_date DATE\n" +
+    //"OUT result INT\n" + will make a result later
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT sites.site_number, sites.price_per_night, sites.max_size, reservation_types.reservation_type \n" +
+    "FROM sites\n" +
+    "JOIN reservation_types ON reservation_types.reservation_type_id = sites.reservation_type_id\n" +
+    "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) AND sites.max_size >= new_size AND sites.price_per_night <= new_price_per_night;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure check_availability created if it didn't exist");
     }
   });
 }
@@ -456,6 +596,62 @@ function addDummyData() {
     }
     console.log("database.js: Added 'Completed' to reservation_status");
   });
+
+  sql = "CALL insert_reservation_type('RVParking')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'RVParking' to reservation_types");
+  });
+
+  sql = "CALL insert_reservation_type('DryCamping')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'DryCamping' to reservation_types");
+  });
+
+  sql = "CALL insert_reservation_type('Tenting')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Tenting' to reservation_types");
+  });
+
+  sql = "CALL create_site(1, 39, 17, 'Active', 'RVParking', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
+
+  sql = "CALL create_site(3, 46, 19, 'Active', 'RVParking', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
+
+  sql = "CALL create_site(2, NULL, 10, 'Active', 'Tenting', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
+
+
 }
 
 module.exports = con;

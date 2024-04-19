@@ -21,6 +21,8 @@
         function goBack() {
             window.history.back(); // Navigate back
         }
+
+        
     </script>
 </head>
 
@@ -36,30 +38,63 @@
                             <div class="text-center">
                                 <h3 class="text-dark">Make A Reservation</h3>
                             </div>
-                            <form method="post">
-                                <div class="reservations">
-                                    <p>Site in the RV Park: Site 3</p>
-                                    <p>Type of Reservation: RV Parking</p>
-                                    <p>Size of RV: 39ft</p>
-                                    <p>Length of Reservation: April 17, 2024 - April 20, 2024</p>
-                                    <button class="btn btn-primary btn-sm mt-3" type="submit">Make Reservation</button>
-                                </div>
-                                <div class="reservations">
-                                    <p>Site in the RV Park: Site 4</p>
-                                    <p>Type of Reservation: RV Parking</p>
-                                    <p>Size of RV: 39ft</p>
-                                    <p>Length of Reservation: April 17, 2024 - April 20, 2024</p>
-                                    <button class="btn btn-primary btn-sm mt-3" type="submit">Make Reservation</button>
-                                </div>
-                                <div class="reservations">
-                                    <p>Site in the RV Park: Site 5</p>
-                                    <p>Type of Reservation: RV Parking</p>
-                                    <p>Size of RV: 39ft</p>
-                                    <p>Site in the RV Park: Site 3</p>
-                                    <p>Length of Reservation: April 17, 2024 - April 20, 2024</p>
-                                    <button class="btn btn-primary btn-sm mt-3" type="submit">Make Reservation</button>
-                                </div>
-                            </form>
+                            <% function formatDate(dateString) {
+                                // Convert the date string to a JavaScript Date object
+                                const date = new Date(dateString);
+                    
+                                // Define months array
+                                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    
+                                // Get the month, day, and year
+                                const month = months[date.getMonth()];
+                                const day = date.getDate();
+                                const year = date.getFullYear();
+                    
+                                // Add the suffix to the day
+                                let daySuffix;
+                                switch (day) {
+                                    case 1:
+                                    case 21:
+                                    case 31:
+                                        daySuffix = 'st';
+                                        break;
+                                    case 2:
+                                    case 22:
+                                        daySuffix = 'nd';
+                                        break;
+                                    case 3:
+                                    case 23:
+                                        daySuffix = 'rd';
+                                        break;
+                                    default:
+                                        daySuffix = 'th';
+                                }
+                    
+                                // Return the formatted date string
+                                return month + ' ' + day + daySuffix + ', ' + year; 
+                            } %>
+                            <% if (siteReservations.length> 0 ) { %>
+                                <% siteReservations.forEach(function(site) { %>
+                                    <form method="post">
+                                        <div class="reservations">
+                                            <p>Site Number: <%= site.site_number %>
+                                            </p>
+                                            <p>Type of Stay: <%= site.reservation_type %>
+                                            </p>
+                                            <p>Max Size of RV: <%= site.max_size %>
+                                            </p>
+                                            <p>Price Per Night: <%= site.price_per_night %>
+                                            </p>
+                                            <p>Length Of Stay: <%= formatDate(fromDate) %> - <%= formatDate(toDate) %>
+                                            </p>
+                                            <button class="btn btn-primary btn-sm mt-3" type="submit">Make
+                                                Reservation</button>
+                                        </div>
+                                    </form>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <p>There are no sites available for reservations</p>
+                                            <% } %>
                         </div>
                     </div>
                 </div>
