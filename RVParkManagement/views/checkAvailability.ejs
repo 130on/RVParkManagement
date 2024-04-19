@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Check Availability</title>
+  <link rel="stylesheet" href="/css/allViews.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css" />
   <script type="text/javascript" src="crypto-js.js"></script>
@@ -19,6 +20,10 @@
         rvSizeInput.style.display = "none";
       }
     }
+
+    function goBack() {
+      window.history.back(); // Navigate back
+    }
   </script>
 </head>
 
@@ -28,7 +33,10 @@
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
           <div class="text-center">
-            <h3 class="text-primary">Check Availability</h3>
+            <!-- Back button -->
+            <button class="back-button" onclick="goBack()">
+              < Back</button>
+                <h3 class="text-primary">Check Availability</h3>
           </div>
           <form method="post">
             <div class="p-4">
@@ -47,13 +55,17 @@
               </div>
               <div id="fromLengthOfStayInput" class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                <input type="text" class="form-control" id="fromLengthOfStay" name="fromLengthOfStay" placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
+                <input type="text" class="form-control" id="fromLengthOfStay" name="fromLengthOfStay"
+                  placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                  onblur="if(this.value=='') this.type='text'">
               </div>
               <div id="toLengthOfStayInput" class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
                 <!-- <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"> -->
-                <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay" placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
-              </div>              
+                <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"
+                  placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                  onblur="if(this.value=='') this.type='text'">
+              </div>
               <div>
                 <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
               </div>
@@ -62,9 +74,6 @@
                   Search
                 </button>
               </div>
-              <p class="text-center mt-5">
-                <span class="text-primary"><a href="/home">Go Back?</a></span>
-              </p>
             </div>
           </form>
         </div>
