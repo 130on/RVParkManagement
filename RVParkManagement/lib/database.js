@@ -196,13 +196,14 @@ function createTables() {
     "payment_id INT NOT NULL, \n" +
     "rv_size DECIMAL(5,2), \n" +
     "date_of_reservation DATE NOT NULL, \n" +
-    "reservation_status VARCHAR(45) NOT NULL, \n" +
+    "reservation_status_id INT NOT NULL, \n" +
     "from_date DATE NOT NULL, \n" +
     "to_date DATE NOT NULL, \n" +
     "PRIMARY KEY (reservation_id), \n" +
     "FOREIGN KEY (user_id) REFERENCES users(user_id),\n" +
     "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id),\n" +
     "FOREIGN KEY (site_id) REFERENCES sites(site_id),\n" +
+    "FOREIGN KEY (reservation_status_id) REFERENCES reservation_status(reservation_status_id),\n" +
     "FOREIGN KEY (payment_id) REFERENCES payments(payment_id)\n" +
     ")";
   con.execute(sql, function (err, results, fields) {
@@ -211,6 +212,21 @@ function createTables() {
       throw err;
     } else {
       console.log("database.js: table reservations created if it didn't exist");
+    }
+  });
+
+
+  sql = "CREATE TABLE IF NOT EXISTS reservation_status (\n" +
+    "reservation_status_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "reservation_status VARCHAR(45) NOT NULL, \n" +
+    "PRIMARY KEY (reservation_status_id)\n" +
+    ")";
+  con.execute(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: table reservation_status created if it didn't exist");
     }
   });
 
@@ -339,10 +355,44 @@ function createStoredProcedures() {
       console.log("database.js: procedure insert_user_type created if it didn't exist");
     }
   });
+
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_reservations`(\n" +
+    "IN userId INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT * \n" +
+    "FROM reservations\n" +
+    "WHERE reservations.user_id = userId AND reservation_status_id = 1;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_reservations created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_reservation_status`(\n" +
+    "IN new_reservation_status VARCHAR(45)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "INSERT INTO reservation_status (reservation_status)\n" +
+    "VALUES (new_reservation_status);\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure insert_reservation_status created if it didn't exist");
+    }
+  });
 }
 
 function addDummyData() {
-
 
   // sql = "CALL register('john.krasinski', 'jk12345', 'John', 'Krasinski', '555-555-5555', '18375960', @result)";
   // con.query(sql, function (err, rows) {
@@ -378,6 +428,33 @@ function addDummyData() {
       throw err;
     }
     console.log("database.js: Added 'employee' to user_types");
+  });
+
+  sql = "CALL insert_reservation_status('Active')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Active' to reservation_status");
+  });
+
+  sql = "CALL insert_reservation_status('Canceled')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Canceled' to reservation_status");
+  });
+
+  sql = "CALL insert_reservation_status('Completed')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Completed' to reservation_status");
   });
 }
 
