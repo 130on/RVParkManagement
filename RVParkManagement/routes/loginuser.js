@@ -38,7 +38,7 @@ router.post('/', function (req, res, next) {
             }
         });
     }
-    else if (req.body.email != "") {
+    else if (req.body.username != "") {
         const username = req.body.username;
         console.log("loginuser.js: username is: " + username);
         const sql = "CALL get_salt('" + username + "')";

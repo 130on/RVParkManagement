@@ -26,15 +26,15 @@ router.get('/', function (req, res, next) {
       req.session.userId = userId;
       console.log("loginuser.js: The userId is: ", userId);
 
-      sql = "CALL get_reservations('" + userId + "');";
-      dbCon.query(sql, function (err, reservationResult) {
+      sql = "CALL get_reservations(?);";
+      dbCon.query(sql, [userId], function (err, reservationResult) {
         if (err) {
-          console.log("manageReservations.js: procedure get_reservations failes");
+          console.log("manageReservations.js: procedure get_reservations failed");
           throw err;
         }
 
         if (reservationResult.length > 0) {
-          var result = reservationResult;
+          const result = reservationResult[0];
           console.log("manageReservations.js: this is the summary info: ", result);
           res.render('manageReservations', { result: result });
         }
@@ -46,6 +46,7 @@ router.get('/', function (req, res, next) {
     } else {
       console.log("No userId found with the username provided");
       console.log("This is the userName: ", userName);
+      res.render('manageReservations', { result: [] });
     }
   });
 
@@ -59,6 +60,7 @@ router.get('/', function (req, res, next) {
 /* POST page*/
 router.post('/', function (req, res, next) {
   console.log("manageReservations.js: POST");
+  //run cancel reservation here
   res.redirect('/manageReservations');
 });
 

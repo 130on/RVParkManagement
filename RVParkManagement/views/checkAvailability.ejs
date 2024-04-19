@@ -32,50 +32,54 @@
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-          <div class="text-center">
-            <!-- Back button -->
-            <button class="back-button" onclick="goBack()">
-              < Back</button>
-                <h3 class="text-primary">Check Availability</h3>
-          </div>
-          <form method="post">
-            <div class="p-4">
-              <div class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
-                <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
-                  <option value="RV Parking">RV Parking</option>
-                  <option value="Tenting">Tenting</option>
-                  <option value="Dry Camping">Dry Camping</option>
-                  <option value="Storage">Storage</option>
-                </select>
-              </div>
-              <div id="rvSizeInput" class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
-                <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
-              </div>
-              <div id="fromLengthOfStayInput" class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                <input type="text" class="form-control" id="fromLengthOfStay" name="fromLengthOfStay"
-                  placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')"
-                  onblur="if(this.value=='') this.type='text'">
-              </div>
-              <div id="toLengthOfStayInput" class="input-group mb-3">
-                <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                <!-- <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"> -->
-                <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"
-                  placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')"
-                  onblur="if(this.value=='') this.type='text'">
-              </div>
-              <div>
-                <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
-              </div>
+          <!-- Back button -->
+          <button class="back-button" onclick="goBack()">
+            < Back</button>
               <div class="text-center">
-                <button class="btn btn-primary mt-2" type="submit">
-                  Search
-                </button>
+                <h3 class="text-primary">Check Availability</h3>
               </div>
-            </div>
-          </form>
+              <form method="post">
+                <div class="p-4">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
+                    <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
+                      <option value="RVParking">RV Parking</option>
+                      <option value="Tenting">Tenting</option>
+                      <option value="DryCamping">Dry Camping</option>
+                      <option value="Storage">Storage</option>
+                    </select>
+                  </div>
+                  <div id="rvSizeInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
+                    <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
+                  </div>
+                  <div id="priceInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
+                    <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
+                      placeholder="Price Per Night">
+                  </div>
+                  <div id="fromDateInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                    <input type="text" class="form-control" id="fromDate" name="fromDate"
+                      placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                      onblur="if(this.value=='') this.type='text'">
+                  </div>
+                  <div id="toDateInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                    <!-- <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"> -->
+                    <input type="text" class="form-control" id="toDate" name="toDate" placeholder="To Date (MM/DD/YYYY)"
+                      onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
+                  </div>
+                  <div>
+                    <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
+                  </div>
+                  <div class="text-center">
+                    <button class="btn btn-primary mt-2" type="submit">
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </form>
         </div>
       </div>
     </div>
