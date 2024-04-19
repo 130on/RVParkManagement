@@ -6,16 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfer History</title>
+    <link rel="stylesheet" href="/css/allViews.css" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
     <style>
-      .reservation-history {
-          border: 3px solid darkblue;
-          padding: 10px;
-          margin-bottom: 10px;
-          line-height: 0.7;
-      }
-  </style>
+        .reservation-history {
+            border: 3px solid darkblue;
+            padding: 10px;
+            margin-bottom: 10px;
+            line-height: 0.7;
+        }
+    </style>
+
+    <script>
+        function goBack() {
+            window.history.back(); // Navigate back
+        }
+    </script>
 </head>
 
 <body>
@@ -23,40 +30,39 @@
         <div class="" style="margin-top:100px">
             <div class="rounded d-flex justify-content-center">
                 <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-                    <div class="text-center">
-                        <h3 class="text-dark">Reservation History</h3>
-                    </div>
-                    <div class="reservation-history">
-                      <p>Reservation ID: RV123456</p>
-                      <p>Type of Reservation: RV Parking</p>
-                      <p>Size of RV: 42ft</p>
-                      <p>Site in the RV Park: Site 27</p>
-                      <p>Date Reservation was made: April 10, 2024</p>
-                      <p>Length of Reservation: April 15, 2024 - April 20, 2024</p>
-                      <p>Status of Reservation: Active</p>
-                  </div>
-                  <div class="reservation-history">
-                      <p>Reservation ID: RV987654</p>
-                      <p>Type of Reservation: RV Parking</p>
-                      <p>Size of RV: 39ft</p>
-                      <p>Site in the RV Park: Site 5</p>
-                      <p>Date Reservation was made: April 9, 2024</p>
-                      <p>Length of Reservation: April 18, 2024 - April 25, 2024</p>
-                      <p>Status of Reservation: Canceled</p>
-                  </div>
-                  <div class="reservation-history">
-                      <p>Reservation ID: RV789012</p>
-                      <p>Type of Reservation: RV Parking</p>
-                      <p>Size of RV: 60ft</p>
-                      <p>Site in the RV Park: Site 34</p>
-                      <p>Date Reservation was made: March 3, 2024</p>
-                      <p>Length of Reservation: April 1, 2024 - April 3, 2024</p>
-                      <p>Status of Reservation: Closed</p>
-                  </div>
-                  
-                    <p class="text-center mt-5">
-                      <span class="text-primary"><a href="/home">Go Back?</a></span>
-                    </p>
+                    <!-- Back button -->
+                    <button class="back-button" onclick="goBack()">
+                        < Back</button>
+                            <div class="text-center">
+                                <h3 class="text-dark">Reservation History</h3>
+                            </div>
+                            <div class="reservation-history">
+                                <p>Reservation ID: RV123456</p>
+                                <p>Type of Reservation: RV Parking</p>
+                                <p>Size of RV: 42ft</p>
+                                <p>Site in the RV Park: Site 27</p>
+                                <p>Date Reservation was made: April 10, 2024</p>
+                                <p>Length of Reservation: April 15, 2024 - April 20, 2024</p>
+                                <p>Status of Reservation: Active</p>
+                            </div>
+                            <div class="reservation-history">
+                                <p>Reservation ID: RV987654</p>
+                                <p>Type of Reservation: RV Parking</p>
+                                <p>Size of RV: 39ft</p>
+                                <p>Site in the RV Park: Site 5</p>
+                                <p>Date Reservation was made: April 9, 2024</p>
+                                <p>Length of Reservation: April 18, 2024 - April 25, 2024</p>
+                                <p>Status of Reservation: Canceled</p>
+                            </div>
+                            <div class="reservation-history">
+                                <p>Reservation ID: RV789012</p>
+                                <p>Type of Reservation: RV Parking</p>
+                                <p>Size of RV: 60ft</p>
+                                <p>Site in the RV Park: Site 34</p>
+                                <p>Date Reservation was made: March 3, 2024</p>
+                                <p>Length of Reservation: April 1, 2024 - April 3, 2024</p>
+                                <p>Status of Reservation: Closed</p>
+                            </div>
                 </div>
             </div>
         </div>
