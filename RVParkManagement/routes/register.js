@@ -33,7 +33,7 @@ router.post('/', function (req, res, next) {
 
 
     console.log("register.js: username: " + username + " salt: " + salt + " hash: " + hash);
-    let sql = "CALL register_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result); select @result";
+    let sql = "CALL register_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  @result); select @result";
     dbCon.query(sql, [username, firstname, lastname, email, phoneNumber, hash, salt, streetAddress, city, state, zip, dodAffiliation, dodStatus, rank, userType], function (err, rows) {
         if (err) {
             throw err;
@@ -54,7 +54,7 @@ router.post('/', function (req, res, next) {
                 console.log("register.js: Successful registration, a session field is: " + req.session.username);
 
                 // Redirect the user to the home page.  Let that redirect the user to the next correct spot.
-                res.redirect('/');
+                res.redirect('/home');
             });
         } else {
             //This user account already exists
