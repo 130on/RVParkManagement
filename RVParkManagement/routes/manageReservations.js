@@ -49,19 +49,34 @@ router.get('/', function (req, res, next) {
       res.render('manageReservations', { result: [] });
     }
   });
-
-
-
-
-  // res.render('manageReservations', {});
 });
 
 
 /* POST page*/
 router.post('/', function (req, res, next) {
   console.log("manageReservations.js: POST");
+
   //run cancel reservation here
-  res.redirect('/manageReservations');
+  var user_id = req.session.userId;
+  var reservation_id = req.body.reservation_id;
+  console.log("manageReservations.js: POST - This is the userID: ", user_id);
+  console.log("manageReservations.js: POST - This is the reservationID: ", reservation_id);
+
+  let sql = "CALL cancel_reservation(?);";
+  dbCon.query(sql, [reservation_id], function (err, result) {
+    if (err) {
+      console.log("manageReservations.js: procedurecancel_reservations failed");
+      throw err;
+    }
+
+    if (result.lenth > 0) {
+      console.log("manageReservations.js: POST - reservation was canceled successfully");
+    }
+
+    res.redirect('/manageReservations');
+  });
+
+
 });
 
 module.exports = router;

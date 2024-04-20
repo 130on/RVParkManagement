@@ -365,9 +365,16 @@ function createStoredProcedures() {
     "IN userId INT\n" +
     ")\n" +
     "BEGIN\n" +
-    "SELECT * \n" +
-    "FROM reservations\n" +
-    "WHERE reservations.user_id = userId AND reservation_status_id = 1;\n" +
+    "DECLARE length INT;\n" +
+    "SELECT reservations.reservation_id, reservation_status.status, reservation_types.reservation_type,  \n" +
+    "reservations.rv_size, sites.site_number, \n" +
+    "DATE_FORMAT(reservations.date_of_reservation, '%a %b %d %Y') AS reservation_date, \n" +
+    "DATEDIFF(reservations.to_date, reservations.from_date) AS length \n" +
+    "FROM reservations \n" +
+    "INNER JOIN reservation_status ON reservations.reservation_status_id = reservation_status.reservation_status_id\n" +
+    "INNER JOIN reservation_types ON reservations.reservation_type_id = reservation_types.reservation_type_id\n" +
+    "INNER JOIN sites ON reservations.site_id = sites.site_id\n" +
+    "WHERE reservations.user_id = userId AND reservation_status.reservation_status_id = 1;\n" +
     "END;";
 
   con.query(sql, function (err, results, fields) {
@@ -407,7 +414,7 @@ function createStoredProcedures() {
     "SELECT status FROM DUAL\n" +
     "WHERE NOT EXISTS (\n" +
     "SELECT * FROM reservation_status\n" +
-    "WHERE reservation_status.status=status LIMIT 1\n" +
+    "WHERE reservation_status.status = status LIMIT 1\n" +
     ");\n" +
     "END;";
   con.query(sql, function (err, results, fields) {
@@ -459,7 +466,7 @@ function createStoredProcedures() {
     "BEGIN\n" +
     "INSERT INTO reservations (user_id, reservation_type_id, site_id, payment_id, rv_size, reservation_status_id, from_date, to_date)\n" +
     "VALUES (new_user_id," +
-    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1),"+
+    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1)," +
     "(SELECT site_id FROM sites WHERE sites.site_number = new_site_number LIMIT 1)," +
     "newEmail, newPhoneNumber, newHashedPassword, newSalt, newStreetAddress, newCity, newState, newZIP, newDodAffiliation, newDodStatus, newRank," +
     "(SELECT user_type_id FROM user_types WHERE user_types.user_type = newUserRoleId LIMIT 1));\n" +
@@ -530,6 +537,25 @@ function createStoredProcedures() {
       console.log("database.js: procedure check_availability created if it didn't exist");
     }
   });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `cancel_reservation`(\n" +
+    "IN cancel_reservation_id INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "UPDATE reservations \n" +
+    "SET reservation_status_id = 2\n" +
+    "WHERE reservation_id = cancel_reservation_id; \n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure cancel_reservation created if it didn't exist");
+    }
+  });
+
 }
 
 function addDummyData() {

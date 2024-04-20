@@ -16,9 +16,17 @@
             border: 3px solid darkblue;
             padding: 10px;
             margin-bottom: 10px;
+            padding-bottom: 5px;
             line-height: 0.7
         }
+
+        .reservation-item {
+            border-bottom: 1px solid;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
     </style>
+
     <script>
         function goBack() {
             window.history.back(); // Navigate back
@@ -80,34 +88,38 @@
                             <div class="text-center">
                                 <h3 class="text-dark">Manage Active Reservations</h3>
                             </div>
-                            <form method="post">
 
-                                <div class="manage-reservations">
-                                    <% if (result.length> 0 ) { %>
-                                        <% result[0].forEach(function(reservation) { %>
+
+                            <div class="manage-reservations">
+                                <% if (result.length> 0 ) { %>
+                                    <% result.forEach(function(reservation) { %>
+                                        <div class="reservation-item">
                                             <p>Reservation ID: <%= reservation.reservation_id %>
                                             </p>
-                                            <p>Type of Reservation: <%= reservation.reservation_type_id %>
+                                            <p>Type of Reservation: <%= reservation.reservation_type %>
                                             </p>
                                             <p>Size of RV: <%= reservation.rv_size %>
                                             </p>
-                                            <p>Site in the RV Park: <%= reservation.site_id %>
+                                            <p>Site in the RV Park: <%= reservation.site_number %>
                                             </p>
-                                            <p>Date Reservation was made: <%= reservation.date_of_reservation %>
+                                            <p>Date Reservation was made: <%= reservation.reservation_date %>
                                             </p>
-                                            <p>Length of Reservation: <%= reservation.from_date %> - <%=
-                                                        reservation.to_date %>
+                                            <p>Length of Reservation: <%= reservation.length %> days
                                             </p>
-                                            <p>Status of Reservation: <%= reservation.reservation_status_id %>
+                                            <p>Status of Reservation: <%= reservation.status %>
                                             </p>
-                                            <button class="btn btn-danger btn-sm mt-3" type="submit">Cancel</button>
-                                            <% }); %>
-                                                <% } else { %>
-                                                    <p>There are no active reservations in the system</p>
-                                                    <% } %>
+                                            <form action="/manageReservations" method="post">
+                                                <input type="hidden" name="reservation_id"
+                                                    value="<%= reservation.reservation_id %>" id="reservation_id">
+                                                <button class="btn btn-danger btn-sm mt-3" type="submit">Cancel</button>
+                                            </form>
+                                        </div>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <p>There are no active reservations in the system</p>
+                                                <% } %>
+                            </div>
 
-                                </div>
-                            </form>
                 </div>
             </div>
         </div>
