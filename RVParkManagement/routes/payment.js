@@ -25,7 +25,18 @@ function parseDate(dateString) {
 /* GET home page. */
 router.get('/', function (req, res, next) {
   console.log("payment.js: GET");
-  res.render('payment', {});
+
+  const pricePerNight = req.query.pricePerNight;
+  const fromDate = req.query.fromDate;
+  const toDate = req.query.toDate;
+
+  const fromDateObj = parseDate(fromDate);
+  const toDateObj = parseDate(toDate);
+  const oneDay = 24 * 60 * 60 * 1000;
+  const daysDifference = Math.round(Math.abs((fromDateObj - toDateObj) / oneDay));
+  const amount = daysDifference * pricePerNight;
+
+  res.render('payment', { amount });
 
   var userId;
   let sql = "SELECT user_id\n" +
@@ -34,13 +45,13 @@ router.get('/', function (req, res, next) {
 
   dbCon.query(sql, [req.session.username], function (err, results) {
     if (err) {
-      console.log("index.js: Query to find userId failed");
+      console.log("payment.js: Query to find userId failed");
       throw err;
     }
     if (results.length > 0) {
       userId = parseInt(results[0].user_id);
       req.session.userId = userId;
-      console.log("loginuser.js: The userId is: ", userId);
+      console.log("payment.js: The userId is: ", userId);
     }
   });
 

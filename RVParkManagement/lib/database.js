@@ -538,8 +538,7 @@ function createStoredProcedures() {
   });
 
 
-  sql =
-    "CREATE PROCEDURE IF NOT EXISTS `check_availability`(\n" +
+  sql = "CREATE PROCEDURE IF NOT EXISTS `check_availability`(\n" +
     "IN new_reservation_type VARCHAR(45),\n" +
     "IN new_size INT,\n" +
     "IN new_price_per_night INT,\n" +
@@ -551,8 +550,18 @@ function createStoredProcedures() {
     "SELECT sites.site_id, sites.site_number, sites.price_per_night, sites.max_size, reservation_types.reservation_type \n" +
     "FROM sites\n" +
     "JOIN reservation_types ON reservation_types.reservation_type_id = sites.reservation_type_id\n" +
-    "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) AND (new_size IS NULL OR sites.max_size >= new_size) AND sites.price_per_night <= new_price_per_night;\n" +
+    "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) \n" +
+    "AND (new_size IS NULL OR sites.max_size >= new_size) \n" +
+    "AND sites.price_per_night <= new_price_per_night \n" +
+    "AND NOT EXISTS (\n" +
+    "    SELECT 1\n" +
+    "    FROM reservations\n" +
+    "    WHERE reservations.site_id = sites.site_id\n" +
+    "    AND reservations.from_date <= new_to_date\n" +
+    "    AND reservations.to_date >= new_from_date\n" +
+    ");\n" +
     "END;";
+
   con.query(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
@@ -561,6 +570,7 @@ function createStoredProcedures() {
       console.log("database.js: procedure check_availability created if it didn't exist");
     }
   });
+
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `cancel_reservation`(\n" +
     "IN cancel_reservation_id INT\n" +

@@ -26,13 +26,13 @@ router.get('/', function (req, res, next) {
 
   dbCon.query(sql, [req.session.username], function (err, results) {
     if (err) {
-      console.log("index.js: Query to find userId failed");
+      console.log("reservation.js: Query to find userId failed");
       throw err;
     }
     if (results.length > 0) {
       userId = parseInt(results[0].user_id);
       req.session.userId = userId;
-      console.log("loginuser.js: The userId is: ", userId);
+      console.log("reservation.js: The userId is: ", userId);
     }
   });
 
