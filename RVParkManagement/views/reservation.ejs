@@ -21,35 +21,31 @@
         function goBack() {
             window.history.back(); // Navigate back
         }
-
-        
     </script>
 </head>
 
 <body>
     <div class="container-fluid vh-100" style="margin-top:10px">
-        <!-- Back button -->
         <button class="back-button" onclick="goBack()">
             < Back</button>
                 <div class="" style="margin-top:100px">
                     <div class="rounded d-flex justify-content-center">
                         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-
                             <div class="text-center">
                                 <h3 class="text-dark">Make A Reservation</h3>
                             </div>
                             <% function formatDate(dateString) {
                                 // Convert the date string to a JavaScript Date object
                                 const date = new Date(dateString);
-                    
+                            
                                 // Define months array
                                 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    
+                            
                                 // Get the month, day, and year
                                 const month = months[date.getMonth()];
-                                const day = date.getDate();
+                                const day = date.getDate() + 1; // Add 1 to the day value
                                 const year = date.getFullYear();
-                    
+                            
                                 // Add the suffix to the day
                                 let daySuffix;
                                 switch (day) {
@@ -69,28 +65,43 @@
                                     default:
                                         daySuffix = 'th';
                                 }
-                    
+                            
                                 // Return the formatted date string
                                 return month + ' ' + day + daySuffix + ', ' + year; 
                             } %>
-                            <% if (siteReservations.length> 0 ) { %>
+                            <% if (siteReservations.length> 0) { %>
                                 <% siteReservations.forEach(function(site) { %>
-                                    <form method="post">
                                         <div class="reservations">
                                             <p>Site Number: <%= site.site_number %>
                                             </p>
                                             <p>Type of Stay: <%= site.reservation_type %>
                                             </p>
-                                            <p>Max Size of RV: <%= site.max_size %>
-                                            </p>
-                                            <p>Price Per Night: <%= site.price_per_night %>
-                                            </p>
-                                            <p>Length Of Stay: <%= formatDate(fromDate) %> - <%= formatDate(toDate) %>
-                                            </p>
-                                            <button class="btn btn-primary btn-sm mt-3" type="submit">Make
-                                                Reservation</button>
-                                        </div>
-                                    </form>
+                                            <% if (site.reservation_type !=='Tenting' && site.reservation_type
+                                                !=='Storage' ) { %>
+                                                <p>Max Size of RV: <%= site.max_size %> ft</p>
+                                            <% } %>
+                                            <p>Price Per Night: $<%= Number(site.price_per_night).toFixed(2) %></p>
+                                            <p>Length Of Stay: <%= formatDate(fromDate) %> - <%=
+                                                formatDate(toDate) %>
+                                             </p>
+                                        
+                                        <form method="post">
+                                            <input type="hidden" name="site_id"
+                                                value="<%= site.site_id %>" id="site_id">
+                                            <input type="hidden" name="reservation_type"
+                                                value="<%= reservationType %>" id="reservation_type">
+                                            <input type="hidden" name="size"
+                                                value="<%= size %>" id="size">
+                                             <input type="hidden" name="pricePerNight"
+                                                value="<%= site.price_per_night %>" id="pricePerNight">
+                                            <input type="hidden" name="fromDate"
+                                                value="<%= fromDate %>" id="fromDate">
+                                            <input type="hidden" name="toDate"
+                                                value="<%= toDate %>" id="toDate">
+                                                <button class="btn btn-primary btn-sm mt-3" type="submit">Make
+                                                    Reservation</button>
+                                        </form>
+                                    </div>
                                     <% }); %>
                                         <% } else { %>
                                             <p>There are no sites available for reservations</p>

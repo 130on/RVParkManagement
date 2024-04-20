@@ -433,13 +433,15 @@ function createStoredProcedures() {
     "IN new_payment_date DATE,\n" +
     "IN new_payment_status VARCHAR(10),\n" +
     "IN new_reason VARCHAR(255),\n" +
-    "IN new_user_id INT\n" +
-    //"OUT result INT\n" +
+    "IN new_user_id INT,\n" +
+    "OUT result INT\n" +
     ")\n" +
     "BEGIN\n" +
     "INSERT INTO payments (card_number, amount, payment_date, payment_status, reason, user_id)\n" +
     "VALUES (new_card_number, new_amount, new_payment_date, new_payment_status, new_reason, new_user_id);\n" +
+    "SET result = LAST_INSERT_ID();\n" +
     "END;";
+
   con.query(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
@@ -455,28 +457,50 @@ function createStoredProcedures() {
     "CREATE PROCEDURE IF NOT EXISTS `create_reservation`(\n" +
     "IN new_user_id INT,\n" +
     "IN new_reservation_type VARCHAR(45),\n" +
-    "IN new_site_number INT,\n" +
+    "IN new_site_id INT,\n" +
     "IN new_payment_id INT,\n" +
     "IN new_rv_size INT,\n" +
-    "IN new_reservation_status_id INT,\n" +
+    "IN new_date_of_reservation DATE,\n" +
+    "IN new_reservation_status VARCHAR(45),\n" +
     "IN new_from_date DATE,\n" +
-    "IN new_to_date DATE\n" +
-    //"OUT result INT\n" +
+    "IN new_to_date DATE,\n" +
+    "OUT result INT\n" +
     ")\n" +
     "BEGIN\n" +
-    "INSERT INTO reservations (user_id, reservation_type_id, site_id, payment_id, rv_size, reservation_status_id, from_date, to_date)\n" +
+    "INSERT INTO reservations (user_id, reservation_type_id, site_id, payment_id, rv_size, date_of_reservation, reservation_status_id, from_date, to_date)\n" +
     "VALUES (new_user_id," +
     "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1)," +
-    "(SELECT site_id FROM sites WHERE sites.site_number = new_site_number LIMIT 1)," +
-    "newEmail, newPhoneNumber, newHashedPassword, newSalt, newStreetAddress, newCity, newState, newZIP, newDodAffiliation, newDodStatus, newRank," +
-    "(SELECT user_type_id FROM user_types WHERE user_types.user_type = newUserRoleId LIMIT 1));\n" +
+    "new_site_id, new_payment_id, new_rv_size, new_date_of_reservation," +
+    "(SELECT reservation_status_id FROM reservation_status WHERE reservation_status.status = new_reservation_status LIMIT 1), " +
+    "new_from_date, new_to_date);\n" +
+    "SET result = LAST_INSERT_ID();\n" +
     "END;";
   con.query(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
       throw err;
     } else {
-      console.log("database.js: procedure register_user created if it didn't exist");
+      console.log("database.js: procedure create_reservation created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_reservation`(\n" +
+    "IN new_reservation_id VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT reservation_types.reservation_type, reservations.rv_size, sites.site_number, payments.amount, reservations.date_of_reservation, reservations.from_date, reservations.to_date FROM reservations\n" +
+    "JOIN reservation_types ON reservation_types.reservation_type_id = reservations.reservation_type_id\n" +
+    "JOIN sites ON sites.site_id = reservations.site_id\n" +
+    "JOIN payments ON payments.payment_id = reservations.payment_id\n" +
+    "WHERE reservations.reservation_id = new_reservation_id\n" +
+    "LIMIT 1;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_reservation created if it didn't exist");
     }
   });
 
@@ -524,10 +548,10 @@ function createStoredProcedures() {
     //"OUT result INT\n" + will make a result later
     ")\n" +
     "BEGIN\n" +
-    "SELECT sites.site_number, sites.price_per_night, sites.max_size, reservation_types.reservation_type \n" +
+    "SELECT sites.site_id, sites.site_number, sites.price_per_night, sites.max_size, reservation_types.reservation_type \n" +
     "FROM sites\n" +
     "JOIN reservation_types ON reservation_types.reservation_type_id = sites.reservation_type_id\n" +
-    "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) AND sites.max_size >= new_size AND sites.price_per_night <= new_price_per_night;\n" +
+    "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) AND (new_size IS NULL OR sites.max_size >= new_size) AND sites.price_per_night <= new_price_per_night;\n" +
     "END;";
   con.query(sql, function (err, results, fields) {
     if (err) {
