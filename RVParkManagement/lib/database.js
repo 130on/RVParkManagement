@@ -459,7 +459,7 @@ function createStoredProcedures() {
     "IN new_reservation_type VARCHAR(45),\n" +
     "IN new_site_id INT,\n" +
     "IN new_payment_id INT,\n" +
-    "IN new_rv_size INT,\n" +
+    "IN new_rv_size DECIMAL(5,2),\n" +
     "IN new_date_of_reservation DATE,\n" +
     "IN new_reservation_status VARCHAR(45),\n" +
     "IN new_from_date DATE,\n" +
