@@ -170,7 +170,7 @@ function createTables() {
 
   sql = "CREATE TABLE IF NOT EXISTS payments (\n" +
     "payment_id INT NOT NULL AUTO_INCREMENT,\n" +
-    "card_number INT(12) NOT NULL, \n" +
+    "card_number VARCHAR(16) NOT NULL, \n" +
     "amount DECIMAL(15,2) NOT NULL, \n" +
     "payment_date DATE NOT NULL, \n" +
     "payment_status VARCHAR(45) NOT NULL, \n" +
@@ -205,7 +205,7 @@ function createTables() {
 
 
   sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
-    "reservation_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "reservation_id INT(7) ZEROFILL NOT NULL AUTO_INCREMENT,\n" +
     "user_id INT(6) ZEROFILL NOT NULL,\n" +
     "reservation_type_id INT NOT NULL, \n" +
     "site_id INT NOT NULL, \n" +
@@ -428,7 +428,7 @@ function createStoredProcedures() {
 
   sql =
     "CREATE PROCEDURE IF NOT EXISTS `make_payment`(\n" +
-    "IN new_card_number int,\n" +
+    "IN new_card_number VARCHAR(16),\n" +
     "IN new_amount decimal(8,2),\n" +
     "IN new_payment_date DATE,\n" +
     "IN new_payment_status VARCHAR(10),\n" +
@@ -587,6 +587,25 @@ function createStoredProcedures() {
       throw err;
     } else {
       console.log("database.js: procedure cancel_reservation created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `refund_payment`(\n" +
+    "IN new_reservation_id INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "UPDATE payments \n" +
+    "JOIN reservations ON reservations.payment_id = payments.payment_id\n" +
+    "SET payments.payment_status = 'Refunded'\n" +
+    "WHERE reservations.reservation_id = new_reservation_id; \n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure refund_payment created if it didn't exist");
     }
   });
 
