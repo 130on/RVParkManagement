@@ -20,6 +20,7 @@ var paymentRouter = require('./routes/payment');
 var homeRouter = require('./routes/home');
 var adminViewRouter = require('./routes/adminView.js');
 var employeeViewRouter = require('./routes/employeeView.js');
+var editAdminRouter = require('./routes/editAccountAdmin.js');
 
 var app = express();
 
@@ -76,7 +77,7 @@ app.use('/payment', paymentRouter);
 app.use('/home', homeRouter);
 app.use('/adminView', adminViewRouter);
 app.use('/employeeView', employeeViewRouter);
-
+app.use('/editAccountAdmin', editAdminRouter);
 
 
 // catch 404 and forward to error handler

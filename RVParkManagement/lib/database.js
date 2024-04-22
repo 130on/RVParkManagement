@@ -590,6 +590,60 @@ function createStoredProcedures() {
     }
   });
 
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_usertype_id`(\n" +
+    "IN logged_userid INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT user_role_id \n" +
+    "FROM users\n" +
+    "WHERE users.user_id = logged_userid; \n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure cancel_reservation created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_users`()\n" +
+    "BEGIN\n" +
+    "SELECT username \n" +
+    "FROM users;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_users created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_user_info`(\n" +
+    "IN getUserName VARCHAR(45)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT *, users.user_role_id AS role \n" +
+    "FROM users\n" +
+    "INNER JOIN user_types ON users.user_role_id = user_types.user_type_id\n" +
+    "WHERE username = getUserName;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_user_info created if it didn't exist");
+    }
+  });
+
+
+
 }
 
 function addDummyData() {
@@ -709,6 +763,17 @@ function addDummyData() {
       throw err;
     }
     console.log("database.js: Added site to sites");
+  });
+
+  sql = "CALL register_user('admin', 'admin', 'admin', 'admin@gmail.com', '8017753250', '757e31954b06c8c0e3b2f026d507b78a7a0f9d76e545cb70f631b0e1004f086b',\n" +
+    "'0ce81db045e50d61', '5622 Park Ln. Bldg. #564', 'Hill AFB', 'UT', 84056, 'DOD Authorized Civilian',\n" +
+    "'other', 'none', 'admin', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added admin account to users");
   });
 
 
