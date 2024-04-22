@@ -362,19 +362,21 @@ function createStoredProcedures() {
 
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `get_reservations`(\n" +
-    "IN userId INT\n" +
+    "IN userId INT,\n" +
+    "IN new_reservation_status VARCHAR(45)\n" +
     ")\n" +
     "BEGIN\n" +
     "DECLARE length INT;\n" +
     "SELECT reservations.reservation_id, reservation_status.status, reservation_types.reservation_type,  \n" +
     "reservations.rv_size, sites.site_number, \n" +
     "DATE_FORMAT(reservations.date_of_reservation, '%a %b %d %Y') AS reservation_date, \n" +
-    "DATEDIFF(reservations.to_date, reservations.from_date) AS length \n" +
+    "DATEDIFF(reservations.to_date, reservations.from_date) AS length, \n" +
+    "reservations.from_date, reservations.to_date\n" +
     "FROM reservations \n" +
     "INNER JOIN reservation_status ON reservations.reservation_status_id = reservation_status.reservation_status_id\n" +
     "INNER JOIN reservation_types ON reservations.reservation_type_id = reservation_types.reservation_type_id\n" +
     "INNER JOIN sites ON reservations.site_id = sites.site_id\n" +
-    "WHERE reservations.user_id = userId AND reservation_status.reservation_status_id = 1;\n" +
+    "WHERE reservations.user_id = userId AND (new_reservation_status = '' OR reservation_status.status = new_reservation_status);\n" +
     "END;";
 
   con.query(sql, function (err, results, fields) {
