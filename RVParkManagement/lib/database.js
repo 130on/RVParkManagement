@@ -258,21 +258,26 @@ function createStoredProcedures() {
     "OUT result INT\n" +
     ")\n" +
     "BEGIN\n" +
-    "DECLARE userCount INT;\n" +
+    "DECLARE usernameCount INT;\n" +
+    "DECLARE emailCount INT;\n" +
     "SET result = 0;\n" +
-    "SELECT COUNT(*) INTO userCount\n" +
+    "SELECT COUNT(*) INTO usernameCount\n" +
     "FROM users\n" +
-    "WHERE email = newEmail\n" +
-    "OR username = newUserName;\n" +
-    "IF userCount = 0\n" +
-    "THEN \n" +
-    "INSERT INTO users (username, first_name, last_name, email, phone_number, hashed_password, salt, street_address, city, state, zip, dod_affiliation, dod_status, military_rank, user_role_id)\n" +
-    "VALUES (newUsername, newFirstName, newLastName, newEmail, newPhoneNumber, newHashedPassword, newSalt, newStreetAddress, newCity, newState, newZIP, newDodAffiliation, newDodStatus, newRank," +
-    "(SELECT user_type_id FROM user_types WHERE user_types.user_type = newUserRoleId LIMIT 1));\n" +
+    "WHERE username = newUsername;\n" +
+    "SELECT COUNT(*) INTO emailCount\n" +
+    "FROM users\n" +
+    "WHERE email = newEmail;\n" +
+    "IF usernameCount > 0 THEN\n" +
+    "    SET result = 1;\n" +
+    "ELSEIF emailCount > 0 THEN\n" +
+    "    SET result = 2;\n" +
     "ELSE\n" +
-    "SET result = 1;\n" +
+    "    INSERT INTO users (username, first_name, last_name, email, phone_number, hashed_password, salt, street_address, city, state, zip, dod_affiliation, dod_status, military_rank, user_role_id)\n" +
+    "    VALUES (newUsername, newFirstName, newLastName, newEmail, newPhoneNumber, newHashedPassword, newSalt, newStreetAddress, newCity, newState, newZIP, newDodAffiliation, newDodStatus, newRank,\n" +
+    "    (SELECT user_type_id FROM user_types WHERE user_types.user_type = newUserRoleId LIMIT 1));\n" +
     "END IF;\n" +
     "END;";
+
   con.query(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
