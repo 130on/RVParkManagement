@@ -3,6 +3,16 @@ var router = express.Router();
 
 var dbCon = require('../lib/database');
 
+// Function to format a date as mm/dd/yyyy
+function formatDate(date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return year + '-' + month + '-' + day;
+}
+
+const todaysDate = formatDate(new Date());
+
 /* GET page. */
 router.get('/', function (req, res, next) {
   console.log("manageReservations.js: GET");
@@ -73,10 +83,48 @@ router.post('/', function (req, res, next) {
       console.log("manageReservations.js: POST - reservation was canceled successfully");
     }
 
-    res.redirect('/manageReservations');
+    sql = "CALL refund_payment(?);";
+    dbCon.query(sql, [reservation_id], function (err, result) {
+      if (err) {
+        console.log("manageReservations.js: refund_payment method failed");
+        throw err;
+      }
+
+      if (result.lenth > 0) {
+        console.log("manageReservations.js: Payment was refunded");
+      }
+
+      let sql = "SELECT payments.card_number\n" +
+        "FROM payments\n" +
+        "JOIN reservations ON reservations.payment_id = payments.payment_id\n" +
+        "WHERE reservations.reservation_id = (?);\n";
+      dbCon.query(sql, [reservation_id], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        if (results.length > 0) {
+          cardNumber =results[0].card_number;
+        }
+
+        sql = "CALL make_payment(?, ?, ?, ?, ?, ?, @result); SELECT @result";
+        dbCon.query(sql, [cardNumber, 10, todaysDate, 'Active', 'Cancellation Fee', req.session.userId], function (err, results) {
+          if (err) {
+            console.log("manageReservations.js: refund_payment method failed");
+            throw err;
+          }
+          const paymentId = results[1][0]['@result'];
+          console.log("Payment ID:", paymentId);
+
+          if (result.lenth > 0) {
+            console.log("manageReservations.js: Payment was refunded");
+          }
+
+          res.redirect('/manageReservations');
+        });
+      });
+    });
   });
-
-
 });
+
 
 module.exports = router;
