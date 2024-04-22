@@ -5,7 +5,7 @@ var dbCon = require('../lib/database');
 /* GET page. */
 router.get('/', function (req, res, next) {
     console.log("register.js: GET");
-    res.render('register', {});
+    res.render('register', { formData: {} });
 });
 
 /* POST page. */
@@ -25,8 +25,8 @@ router.post('/', function (req, res, next) {
     const city = req.body.city;
     const state = req.body.state;
     const zip = req.body.zip;
-    const dodAffiliation = req.body.dodaffiliation;
-    const dodStatus = req.body.dodstatus;
+    const dodaffiliation = req.body.dodaffiliation;
+    const dodstatus = req.body.dodstatus;
     const rank = req.body.rank;
 
     let userType = 'customer';
@@ -34,7 +34,7 @@ router.post('/', function (req, res, next) {
 
     console.log("register.js: username: " + username + " salt: " + salt + " hash: " + hash);
     let sql = "CALL register_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  @result); select @result";
-    dbCon.query(sql, [username, firstname, lastname, email, phoneNumber, hash, salt, streetAddress, city, state, zip, dodAffiliation, dodStatus, rank, userType], function (err, rows) {
+    dbCon.query(sql, [username, firstname, lastname, email, phoneNumber, hash, salt, streetAddress, city, state, zip, dodaffiliation, dodstatus, rank, userType], function (err, rows) {
         if (err) {
             throw err;
         }
@@ -57,13 +57,45 @@ router.post('/', function (req, res, next) {
                 res.redirect('/home');
             });
         } else if (rows[1][0]['@result'] == 1) {
-            //This user account already exists
             console.log("register.js: Username already exists.  Reload register page with that message.");
-            res.render('register', { message: "The username '" + username + "' already exists" });
+            return res.render('register', {
+                message: "The username '" + username + "' already exists",
+                formData: {
+                    username,
+                    firstname,
+                    lastname,
+                    email,
+                    phoneNumber,
+                    streetAddress,
+                    city,
+                    state,
+                    zip,
+                    dodaffiliation,
+                    dodstatus,
+                    rank
+                }
+            });
+
         }
-        else if (rows[1][0]['@result'] == 2){
+        else if (rows[1][0]['@result'] == 2) {
             console.log("register.js: Email already exists.  Reload register page with that message.");
-            res.render('register', { message: "The Email address '" + email + "' already exists" });
+            return res.render('register', {
+                message: "The Email address '" + email + "' already exists",
+                formData: {
+                    username,
+                    firstname,
+                    lastname,
+                    email,
+                    phoneNumber,
+                    streetAddress,
+                    city,
+                    state,
+                    zip,
+                    dodaffiliation,
+                    dodstatus,
+                    rank
+                }
+            });
         }
     });
 });

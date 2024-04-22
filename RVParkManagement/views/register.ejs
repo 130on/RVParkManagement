@@ -45,7 +45,7 @@
 
     // Function to handle back button click
     function goBack() {
-      window.history.back(); // Navigate back
+      window.location.href = "/"; // Navigate back
     }
   </script>
 
@@ -162,7 +162,7 @@
   <div class="container-fluid vh-50" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
-        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+        <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light">
           <!-- Back button -->
           <button class="back-button" onclick="goBack()">
             < Back</button>
@@ -174,24 +174,24 @@
                 <div class="p-4">
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-plus-fill text-white"></i></span>
-                    <input id="username" name="username" type="text" class="form-control" placeholder="Username"
+                    <input id="username" name="username" type="text" class="form-control" placeholder="Username" required value="<%= formData ? formData.username : '' %>"
                       required>
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-plus-fill text-white"></i></span>
-                    <input id="firstname" name="firstname" type="text" class="form-control" placeholder="Firstname">
+                    <input id="firstname" name="firstname" type="text" class="form-control" placeholder="Firstname" required value="<%= formData ? formData.firstname : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-plus-fill text-white"></i></span>
-                    <input id="lastname" name="lastname" type="text" class="form-control" placeholder="Lastname">
+                    <input id="lastname" name="lastname" type="text" class="form-control" placeholder="Lastname" required value="<%= formData ? formData.lastname : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-envelope-fill text-white"></i></span>
-                    <input id="email" name="email" type="email" class="form-control" placeholder="Email">
+                    <input id="email" name="email" type="email" class="form-control" placeholder="Email" required value="<%= formData ? formData.email : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-telephone-fill text-white"></i></span>
-                    <input id="phoneNumber" name="phoneNumber" type="text" class="form-control"
+                    <input id="phoneNumber" name="phoneNumber" type="text" class="form-control" required value="<%= formData ? formData.phoneNumber : '' %>"
                       placeholder="Phone Number">
                   </div>
                   <div class="input-group mb-3">
@@ -204,49 +204,49 @@
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
-                    <input id="streetAddress" name="streetAddress" type="text" class="form-control"
+                    <input id="streetAddress" name="streetAddress" type="text" class="form-control" required value="<%= formData ? formData.streetAddress : '' %>"
                       placeholder="Street Address">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
-                    <input id="city" name="city" type="text" class="form-control" placeholder="City">
+                    <input id="city" name="city" type="text" class="form-control" placeholder="City" required value="<%= formData ? formData.city : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
-                    <input id="state" name="state" type="text" class="form-control" placeholder="State">
+                    <input id="state" name="state" type="text" class="form-control" placeholder="State" required value="<%= formData ? formData.state : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-fill text-white"></i></span>
-                    <input id="zip" name="zip" type="text" class="form-control" placeholder="Zip">
+                    <input id="zip" name="zip" type="text" class="form-control" placeholder="Zip" required value="<%= formData ? formData.zip : '' %>">
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
                     <!-- <input id="dodaffiliation" name="dodaffiliation" type="text" class="form-control"
                       placeholder="DOD Affiliation"> -->
-                    <select name="dodaffiliation" id="dodaffiliation" class="form-control" required>
-                      <option value="" disabled selected>DOD Affiliation</option>
-                      <option value="Air Force">Air Force</option>
-                      <option value="Army">Army</option>
-                      <option value="Navy">Navy</option>
-                      <option value="Coast Guard">Coast Guard</option>
-                      <option value="DOD Authorized Civilian">DOD Authorized Civilian</option>
+                      <select name="dodaffiliation" id="dodaffiliation" class="form-control" required>
+                        <option value="" disabled <%= (!formData || !formData.dodaffiliation) ? 'selected' : '' %> >DOD Affiliation</option>
+                        <option value="Air Force" <%= (formData && formData.dodaffiliation === 'Air Force') ? 'selected' : '' %> >Air Force</option>
+                        <option value="Army" <%= (formData && formData.dodaffiliation === 'Army') ? 'selected' : '' %> >Army</option>
+                        <option value="Navy" <%= (formData && formData.dodaffiliation === 'Navy') ? 'selected' : '' %> >Navy</option>
+                        <option value="Coast Guard" <%= (formData && formData.dodaffiliation === 'Coast Guard') ? 'selected' : '' %> >Coast Guard</option>
+                        <option value="DOD Authorized Civilian" <%= (formData && formData.dodaffiliation === 'DOD Authorized Civilian') ? 'selected' : '' %> >DOD Authorized Civilian</option>
                     </select>
-                  </div>
+                </div>                
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
                     <!-- <input id="dodstatus" name="dodstatus" type="text" class="form-control" placeholder="DOD Status"> -->
                     <select name="dodstatus" id="dodstatus" class="form-control" required>
-                      <option value="" disabled selected>DOD Status</option>
-                      <option value="Active Duty">Active Duty</option>
-                      <option value="Reservist">Reservist</option>
-                      <option value="Retired">Retired</option>
-                      <option value="PCS Orders">PCS Orders</option>
-                      <option value="PCS Orders">Other</option>
-                    </select>
+                      <option value="" disabled <% if (!formData || !formData.dodstatus) { %>selected<% } %> >DOD Status</option>
+                      <option value="Active Duty" <% if (formData && formData.dodstatus === 'Active Duty') { %>selected<% } %> >Active Duty</option>
+                      <option value="Reservist" <% if (formData && formData.dodstatus === 'Reservist') { %>selected<% } %> >Reservist</option>
+                      <option value="Retired" <% if (formData && formData.dodstatus === 'Retired') { %>selected<% } %> >Retired</option>
+                      <option value="PCS Orders" <% if (formData && formData.dodstatus === 'PCS Orders') { %>selected<% } %> >PCS Orders</option>
+                      <option value="Other" <% if (formData && formData.dodstatus === 'Other') { %>selected<% } %> >Other</option>
+                  </select>
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-person-fill text-white"></i></span>
-                    <input id="rank" name="rank" type="text" class="form-control" placeholder="Rank">
+                    <input id="rank" name="rank" type="text" class="form-control" placeholder="Rank" required value="<%= formData ? formData.rank : '' %>">
                   </div>
 
                   <div>
