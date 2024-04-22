@@ -36,8 +36,8 @@ router.get('/', function (req, res, next) {
       req.session.userId = userId;
       console.log("loginuser.js: The userId is: ", userId);
 
-      sql = "CALL get_reservations(?);";
-      dbCon.query(sql, [userId], function (err, reservationResult) {
+      sql = "CALL get_reservations(?, ?);";
+      dbCon.query(sql, [userId, 'Active'], function (err, reservationResult) {
         if (err) {
           console.log("manageReservations.js: procedure get_reservations failed");
           throw err;
