@@ -558,9 +558,11 @@ function createStoredProcedures() {
     "AND NOT EXISTS (\n" +
     "    SELECT 1\n" +
     "    FROM reservations\n" +
+    "    JOIN reservation_status ON reservation_status.reservation_status_id = reservations.reservation_status_id\n" +
     "    WHERE reservations.site_id = sites.site_id\n" +
     "    AND reservations.from_date <= new_to_date\n" +
     "    AND reservations.to_date >= new_from_date\n" +
+    "    AND reservation_status.status = 'Active'\n" +
     ");\n" +
     "END;";
 
