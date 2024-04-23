@@ -665,7 +665,163 @@ function createStoredProcedures() {
     }
   });
 
+  // sql = "CREATE PROCEDURE IF NOT EXISTS `edit_user_details`(\n" +
+  //   "IN userId INT,\n" +
+  //   "IN newUserName VARCHAR(50),\n" +
+  //   "IN newFirstName VARCHAR(50),\n" +
+  //   "IN newLastName VARCHAR(50),\n" +
+  //   "IN newEmail VARCHAR(50),\n" +
+  //   "IN newPhoneNum VARCHAR(40),\n" +
+  //   "IN newStreetAddress VARCHAR(255),\n" +
+  //   "IN newCity VARCHAR(40),\n" +
+  //   "IN newState VARCHAR(40),\n" +
+  //   "IN newZipCode VARCHAR(10),\n" +
+  //   "IN newUserRoleId VARCHAR(10),\n" +
+  //   "OUT result INT\n" +
+  //   ")\n" +
+  //   "BEGIN\n" +
+  //   "DECLARE rowsAffected INT;\n" +
+  //   // "UPDATE users SET username = newUserName, first_name = newFirstName, last_name = newLastName, \n" +
+  //   // "email = newEmail, phone_number = newPhoneNum, street_address = newStreetAddress , city = newCity, state = newState, zip = newZipCode, user_role_id = newUserRoleId \n" +
+  //   // "WHERE user_id = userId;\n" +
+  //   "DECLARE updateQuery VARCHAR(1000);\n" +
+  //   "SET result = -1;\n" +
+  //   "    SET updateQuery = 'UPDATE users SET ';\n" +
+  //   "IF newUserName IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'username = ', newUserName, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newFirstName IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'first_name = ', newFirstName, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newLastName IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'last_name = ', newLastName, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newEmail IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'email = ', newEmail, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newPhoneNum IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'phone_number = ', newPhoneNum, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newStreetAddress IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'street_address = ', newStreetAddress, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newCity IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'city = ', newCity, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newState IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'state = ', newState, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newZipCode IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'zip = ', newZipCode, ', ');\n" +
+  //   "END IF;\n" +
+  //   "IF newUserRoleId IS NOT NULL THEN\n" +
+  //   "    SET updateQuery = CONCAT(updateQuery, 'user_role_id = ', newUserRoleId, ', ');\n" +
+  //   "END IF;\n" +
+  //   "SET updateQuery = SUBSTRING(updateQuery, 1, LENGTH(updateQuery) - 2);\n" +
+  //   "SET updateQuery = CONCAT(updateQuery, ' WHERE user_id = ', userId, ';');\n" +
 
+  //   "PREPARE stmt FROM updateQuery;\n" +
+  //   "EXECUTE stmt;\n" +
+  //   "DEALLOCATE PREPARE stmt;\n" +
+
+  //   "SELECT ROW_COUNT() INTO rowsAffected;\n" +
+  //   "IF rowsAffected > 0 THEN \n" +
+  //   "SET result = 0;\n" +
+  //   "END IF;\n" +
+  //   "END;";
+  sql = "CREATE PROCEDURE IF NOT EXISTS `edit_user_details`(\n" +
+    "IN userId INT,\n" +
+    "IN newUserName VARCHAR(50),\n" +
+    "IN newFirstName VARCHAR(50),\n" +
+    "IN newLastName VARCHAR(50),\n" +
+    "IN newEmail VARCHAR(50),\n" +
+    "IN newPhoneNum VARCHAR(40),\n" +
+    "IN newStreetAddress VARCHAR(255),\n" +
+    "IN newCity VARCHAR(40),\n" +
+    "IN newState VARCHAR(40),\n" +
+    "IN newZipCode VARCHAR(10),\n" +
+    "IN newUserRoleId INT,\n" +
+    "OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "DECLARE rowsAffected INT;\n" +
+
+    "SET result = 1;\n" +
+
+    "UPDATE users\n" +
+    "SET \n" +
+    "username = CASE\n" +
+    "WHEN newUserName IS NOT NULL THEN newUserName\n" +
+    "ELSE username\n" +
+    "END,\n" +
+    "first_name = CASE\n" +
+    "WHEN newFirstName IS NOT NULL THEN newFirstName\n" +
+    "ELSE first_name\n" +
+    "END,\n" +
+    "last_name = CASE\n" +
+    "WHEN newLastName IS NOT NULL THEN newLastName\n" +
+    "ELSE last_name\n" +
+    "END,\n" +
+    "email = CASE\n" +
+    "WHEN newEmail IS NOT NULL THEN newEmail\n" +
+    "ELSE email\n" +
+    "END,\n" +
+    "phone_number = CASE\n" +
+    "WHEN newPhoneNum IS NOT NULL THEN newPhoneNum\n" +
+    "ELSE phone_number\n" +
+    "END,\n" +
+    "street_address = CASE\n" +
+    "WHEN newStreetAddress IS NOT NULL THEN newStreetAddress\n" +
+    "ELSE street_address\n" +
+    "END,\n" +
+    "city = CASE\n" +
+    "WHEN newCity IS NOT NULL THEN newCity\n" +
+    "ELSE city\n" +
+    "END,\n" +
+    "state = CASE\n" +
+    "WHEN newState IS NOT NULL THEN newState\n" +
+    "ELSE state\n" +
+    "END,\n" +
+    "zip = CASE\n" +
+    "WHEN newZipCode IS NOT NULL THEN newZipCode\n" +
+    "ELSE zip\n" +
+    "END,\n" +
+    "user_role_id = CASE\n" +
+    "WHEN newUserRoleId IS NOT NULL THEN newUserRoleId\n" +
+    "ELSE user_role_id\n" +
+    "END\n" +
+    "WHERE user_id = userId;\n" +
+
+
+    // "UPDATE users\n" +
+    // "SET \n" +
+    // "username = IFNULL(newUserName, username),\n" +
+    // "first_name = IFNULL(newFirstName, first_name),\n" +
+    // "last_name = IFNULL(newLastName, last_name),\n" +
+    // "email = IFNULL(newEmail, email),\n" +
+    // "phone_number = IFNULL(newPhoneNum, phone_number),\n" +
+    // "street_address = IFNULL(newStreetAddress, street_address),\n" +
+    // "city = IFNULL(newCity, city),\n" +
+    // "state = IFNULL(newState, state),\n" +
+    // "zip = IFNULL(newZipCode, zip),\n" +
+    // "user_role_id = IFNULL(newUserRoleId, user_role_id)\n" +
+    // "WHERE user_id = userId;\n" +
+
+    // -- Get the number of rows affected by the update
+    // "SELECT ROW_COUNT() INTO rowsAffected;\n" +
+
+    // "IF rowsAffected > 0 THEN \n" +
+    // "SET result = 0;\n" +
+    // "END IF;"
+    "END;"
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure edit_user_details created if it didn't exist");
+    }
+  });
 
 }
 
