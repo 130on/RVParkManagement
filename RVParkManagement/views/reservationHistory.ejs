@@ -40,7 +40,7 @@
                                 <% result.forEach(function(reservation) { %>
                                     <div class="reservation-history">
                                         <div class="reservation-item">
-                                            <p>Reservation ID: <%= reservation.reservation_id %>
+                                            <p>Reservation ID: <%= String(reservation.reservation_id).padStart(7, '0' ) %>
                                             </p>
                                             <p>Type of Reservation: <%= reservation.reservation_type %>
                                             </p>

@@ -19,17 +19,68 @@
       } else {
         rvSizeInput.style.display = "none";
         document.getElementById("rvSize").value = "";
+        document.getElementById("rvSizeError").textContent = "";
       }
     }
 
     function prepareSubmit() {
-      var type = document.getElementById("type").value;
-      var rvSize = document.getElementById("rvSize");
-      // Clear rvSize if Tenting or Storage is selected
-      if (type === "Tenting" || type === "Storage") {
-        rvSize.value = '';
+      var isValid = true;
+
+      // Validate RV Size
+      var rvSize = document.getElementById("rvSize").value;
+      var rvSizeError = document.getElementById("rvSizeError");
+      if (!isValidRVSize(rvSize)) {
+        rvSizeError.textContent = "Please enter a valid RV size (Integer or decimal).";
+        isValid = false;
+      } else {
+        rvSizeError.textContent = "";
       }
-      return true;
+
+      // Validate Price Per Night
+      var pricePerNight = document.getElementById("pricePerNight").value;
+      var priceError = document.getElementById("priceError");
+      if (!isValidPrice(pricePerNight)) {
+        priceError.textContent = "Please enter a valid price per night (Integer only).";
+        isValid = false;
+      } else {
+        priceError.textContent = "";
+      }
+
+      // Validate From Date and To Date
+      var fromDate = new Date(document.getElementById("fromDate").value);
+      var toDate = new Date(document.getElementById("toDate").value);
+      var dateError = document.getElementById("dateError");
+
+      // Check if dates are valid and in the future
+      if (!isValidDate(fromDate) || !isValidDate(toDate)) {
+        dateError.textContent = "Please enter valid dates.";
+        isValid = false;
+      } else {
+        dateError.textContent = "";
+      }
+
+      // Check if To Date is later than From Date
+      if (toDate <= fromDate) {
+        dateError.textContent = "\"To Date\" should be later than \"From date\".";
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function isValidRVSize(rvSize) {
+      // Allow digits or decimal
+      return /^\d+(\.\d+)?$/.test(rvSize);
+    }
+
+    function isValidPrice(price) {
+      // Allow digits only
+      return /^\d+$/.test(price);
+    }
+
+    function isValidDate(date) {
+      // Check if date is valid and in the future
+      return date instanceof Date && !isNaN(date) && date > new Date();
     }
 
     function goBack() {
@@ -64,11 +115,13 @@
                   <div id="rvSizeInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
                     <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
+                    <p id="rvSizeError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div id="priceInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
                     <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
                       placeholder="Price Per Night">
+                    <p id="priceError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div id="fromDateInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
@@ -78,17 +131,15 @@
                   </div>
                   <div id="toDateInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                    <!-- <input type="text" class="form-control" id="toLengthOfStay" name="toLengthOfStay"> -->
                     <input type="text" class="form-control" id="toDate" name="toDate" placeholder="To Date (MM/DD/YYYY)"
                       onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
                   </div>
+                  <p id="dateError" class="text-danger" style="height:25px"></p>
                   <div>
                     <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
                   </div>
                   <div class="text-center">
-                    <button class="btn btn-primary mt-2" type="submit">
-                      Search
-                    </button>
+                    <button class="btn btn-primary mt-2" type="submit">Search</button>
                   </div>
                 </div>
               </form>
