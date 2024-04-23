@@ -19,7 +19,7 @@
           <div class="text-center">
             <h3 class="text-primary">Payment</h3>
           </div>
-          <form onSubmit="" method="post">
+          <form id="paymentForm" method="post">
             <div class="p-4">
               <p>Amount: $<%= Number(amount).toFixed(2) %>
               </p>
@@ -28,7 +28,7 @@
                 <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Card Number">
               </div>
               <div>
-                <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
+                <p id="errorMessage" class="text-danger" style="height:25px"></p>
               </div>
               <div class="text-center">
                 <button class="btn btn-primary mt-2" type="submit">
@@ -44,6 +44,23 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.getElementById('paymentForm').addEventListener('submit', function(event) {
+      var cardNumber = document.getElementById('cardNumber').value;
+      var errorMessage = document.getElementById('errorMessage');
+      if (!isValidCardNumber(cardNumber)) {
+        errorMessage.textContent = "Not a valid card number";
+        event.preventDefault();
+      } else {
+        errorMessage.textContent = "";
+      }
+    });
+
+    function isValidCardNumber(cardNumber) {
+      return cardNumber.length >= 12 && cardNumber.length <= 16 && /^\d+$/.test(cardNumber);
+    }
+  </script>
 </body>
 
 </html>
