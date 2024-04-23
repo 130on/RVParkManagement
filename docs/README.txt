@@ -1,7 +1,3 @@
-I REALLY HOPE THIS WORKS IM BEGGING
-
-COME ON, WE ARE SO CLOSE
-
 git commands 
 
 - git clone https://github.com/CS3750-Team3/RVPark.git - If you do not have any type or branch of the remote repo "RVPark" on your computer, use this command
