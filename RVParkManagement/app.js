@@ -11,6 +11,7 @@ var loginUserRouter = require('./routes/loginuser');
 var registerRouter = require('./routes/register');
 var accountOverviewRouter = require('./routes/accountOverview');
 var changePasswordRouter = require('./routes/changePassword');
+var changeAccountInfoRouter = require('./routes/changeAccountInfo');
 var manageReservationsRouter = require('./routes/manageReservations')
 var reservationHistoryRouter = require('./routes/reservationHistory');
 var confirmationRouter = require('./routes/confirmation');
@@ -68,6 +69,7 @@ app.use('/loginuser', loginUserRouter);
 app.use('/register', registerRouter);
 app.use('/accountOverview', accountOverviewRouter);
 app.use('/changePassword', changePasswordRouter);
+app.use('/changeAccountInfo', changeAccountInfoRouter);
 app.use('/manageReservations', manageReservationsRouter);
 app.use('/reservationHistory', reservationHistoryRouter);
 app.use('/confirmation', confirmationRouter);

@@ -14,7 +14,7 @@
     function showRVSizeInput() {
       var type = document.getElementById("type");
       var rvSizeInput = document.getElementById("rvSizeInput");
-      if (type.value === "RVParking") {
+      if (type.value === "RVParking" || type.value === "DryCamping") {
         rvSizeInput.style.display = "";
       } else {
         rvSizeInput.style.display = "none";
@@ -24,12 +24,18 @@
     }
 
     function prepareSubmit() {
+      var type = document.getElementById("type").value;
+      var rvSize = document.getElementById("rvSize");
+      // Clear rvSize if Tenting or Storage is selected
+      if (type === "Tenting" || type === "Storage") {
+        rvSize.value = '';
+      }
       var isValid = true;
 
       // Validate RV Size
       var rvSize = document.getElementById("rvSize").value;
       var rvSizeError = document.getElementById("rvSizeError");
-      if (!isValidRVSize(rvSize)) {
+      if (!isValidRVSize(rvSize) && (type === "DryCamping" || type === "RVParking")) {
         rvSizeError.textContent = "Please enter a valid RV size (Integer or decimal).";
         isValid = false;
       } else {
@@ -86,11 +92,23 @@
     function goBack() {
       window.history.back();
     }
+
+    // Function to handle page load
+    function onPageLoad() {
+      // Reset the page based on the selected type
+      var type = document.getElementById("type").value;
+      if (type === "Tenting" || type === "Storage") {
+        // If the type is "Tenting", hide the RV size input and clear its value and error message
+        document.getElementById("rvSizeInput").style.display = "none";
+        document.getElementById("rvSize").value = "";
+        document.getElementById("rvSizeError").textContent = "";
+      }
+    }
   </script>
 
 </head>
 
-<body>
+<body onload="onPageLoad()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -131,8 +149,9 @@
                   </div>
                   <div id="toDateInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                    <input type="text" class="form-control" id="toDate" name="toDate" placeholder="To Date (MM/DD/YYYY)"
-                      onfocus="(this.type='date')" onblur="if(this.value=='') this.type='text'">
+                    <input type="text" class="form-control" id="toDate" name="toDate"
+                      placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                      onblur="if(this.value=='') this.type='text'">
                   </div>
                   <p id="dateError" class="text-danger" style="height:25px"></p>
                   <div>
