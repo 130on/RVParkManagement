@@ -33,6 +33,7 @@ router.post('/', function (req, res, next) {
         console.log("inside the infoForm");
 
         var username = req.body.usernameToEdit;
+
         const first_name = req.body.firstName !== '' ? req.body.firstName : req.body.placeholderFirstName;
         console.log("this is the placeholderfirstname: ", req.body.placeholderFirstName);
         console.log("this is the first_name to change: ", first_name);
@@ -79,7 +80,8 @@ router.post('/', function (req, res, next) {
                         console.log("changeAccountInfo.js: POST - this is the content of rows: ", rows);
                         if (rows.affectedRows > 0) {
                             console.log("changeAccountInfo.js: user's info successfully changed");
-                            //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
+                            req.session.username = username;
+                            req.session.loggedIn = true;                            //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
                             //res.redirect(redirectUrl);
                             //res.redirect('/editAccountAdmin?userToEdit=' + username);
                             res.redirect('accountOverview');
