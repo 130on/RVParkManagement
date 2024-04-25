@@ -6,20 +6,43 @@ var dbCon = require('../lib/database');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     var userToEdit = req.query.userToEdit;
+    var admin = req.session.username;
 
-    let sql = "CALL get_user_info('" + userToEdit + "');";
-    dbCon.query(sql, function (err, userResult) {
+    let sql = "SELECT user_id FROM users WHERE username = (?)"
+    dbCon.query(sql, [admin], function (err, adminResult) {
         if (err) {
             console.log("editAccountAdmin.js: query to get user info failed");
             throw err;
         }
-        if (userResult.length > 0) {
-            console.log("editAccountAdmin.js: the user's info is: ", userResult);
-
-            res.render('editAccountAdmin', { result: userResult });
+        if (adminResult.length > 0) {
+            console.log("editAccountAdmin.js: the admin's info is: ", adminResult[0]);
         }
-    })
 
+
+        sql = "CALL get_user_info('" + userToEdit + "');";
+        dbCon.query(sql, function (err, userResult) {
+            if (err) {
+                console.log("editAccountAdmin.js: query to get user info failed");
+                throw err;
+            }
+            if (userResult.length > 0) {
+                console.log("editAccountAdmin.js: the user's info is: ", userResult);
+            }
+
+            sql = "CALL get_usertype_id(?);";
+            dbCon.query(sql, [adminResult[0].user_id], function (err, adminResult) {
+                if (err) {
+                    console.log("editAccountAdmin.js: query to get user info failed");
+                    throw err;
+                }
+                if (adminResult.length > 0) {
+                    console.log("editAccountAdmin.js: the admins's type is: ", adminResult[0]);
+
+                    res.render('editAccountAdmin', { result: userResult, adminResults: adminResult[0] });
+                }
+            })
+        })
+    });
 });
 
 
@@ -121,6 +144,5 @@ router.post('/', function (req, res, next) {
             res.redirect('/editAccountAdmin?userToEdit=' + username);
         });
     }
-
 });
 module.exports = router;

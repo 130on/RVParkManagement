@@ -23,6 +23,12 @@ var adminViewRouter = require('./routes/adminView');
 var adminManageReservationsRouter = require('./routes/adminManageReservations');
 var employeeViewRouter = require('./routes/employeeView');
 var editAdminRouter = require('./routes/editAccountAdmin');
+var addSiteRouter = require('./routes/addSite');
+var editSiteInputRouter = require('./routes/editSiteInput');
+var editSiteRouter = require('./routes/editSite');
+var removeSiteInputRouter = require('./routes/removeSiteInput');
+var removeSiteRouter = require('./routes/removeSite');
+
 
 var app = express();
 
@@ -82,6 +88,13 @@ app.use('/adminView', adminViewRouter);
 app.use('/adminManageReservations', adminManageReservationsRouter);
 app.use('/employeeView', employeeViewRouter);
 app.use('/editAccountAdmin', editAdminRouter);
+app.use('/addSite', addSiteRouter);
+app.use('/editSiteInput', editSiteInputRouter);
+app.use('/editSite', editSiteRouter);
+app.use('/removeSiteInput', removeSiteInputRouter);
+app.use('/removeSite', removeSiteRouter);
+
+
 
 
 // catch 404 and forward to error handler
