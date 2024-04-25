@@ -495,10 +495,11 @@ function createStoredProcedures() {
     "IN new_reservation_id VARCHAR(255)\n" +
     ")\n" +
     "BEGIN\n" +
-    "SELECT reservation_types.reservation_type, reservations.rv_size, sites.site_number, payments.amount, reservations.date_of_reservation, reservations.from_date, reservations.to_date FROM reservations\n" +
+    "SELECT reservation_types.reservation_type, reservations.rv_size, sites.site_number, payments.amount, reservations.date_of_reservation, reservations.from_date, reservations.to_date, reservation_status.status FROM reservations\n" +
     "JOIN reservation_types ON reservation_types.reservation_type_id = reservations.reservation_type_id\n" +
     "JOIN sites ON sites.site_id = reservations.site_id\n" +
     "JOIN payments ON payments.payment_id = reservations.payment_id\n" +
+    "JOIN reservation_status ON reservation_status.reservation_status_id = reservations.reservation_status_id\n" +
     "WHERE reservations.reservation_id = new_reservation_id\n" +
     "LIMIT 1;\n" +
     "END;";

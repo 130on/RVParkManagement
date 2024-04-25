@@ -81,7 +81,8 @@ router.post('/', function (req, res, next) {
                         if (rows.affectedRows > 0) {
                             console.log("changeAccountInfo.js: user's info successfully changed");
                             req.session.username = username;
-                            req.session.loggedIn = true;                            //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
+                            req.session.loggedIn = true;
+                            //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
                             //res.redirect(redirectUrl);
                             //res.redirect('/editAccountAdmin?userToEdit=' + username);
                             res.redirect('accountOverview');
