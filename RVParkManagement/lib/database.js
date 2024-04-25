@@ -205,7 +205,7 @@ function createTables() {
 
 
   sql = "CREATE TABLE IF NOT EXISTS reservations (\n" +
-    "reservation_id INT(7) ZEROFILL NOT NULL AUTO_INCREMENT,\n" +
+    "reservation_id INT(7) NOT NULL AUTO_INCREMENT,\n" +
     "user_id INT(6) ZEROFILL NOT NULL,\n" +
     "reservation_type_id INT NOT NULL, \n" +
     "site_id INT NOT NULL, \n" +
@@ -221,7 +221,8 @@ function createTables() {
     "FOREIGN KEY (site_id) REFERENCES sites(site_id),\n" +
     "FOREIGN KEY (reservation_status_id) REFERENCES reservation_status(reservation_status_id),\n" +
     "FOREIGN KEY (payment_id) REFERENCES payments(payment_id)\n" +
-    ")";
+    ") AUTO_INCREMENT=1000001";
+
   con.execute(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
