@@ -12,16 +12,17 @@ var registerRouter = require('./routes/register');
 var accountOverviewRouter = require('./routes/accountOverview');
 var changePasswordRouter = require('./routes/changePassword');
 var changeAccountInfoRouter = require('./routes/changeAccountInfo');
-var manageReservationsRouter = require('./routes/manageReservations')
+var manageReservationsRouter = require('./routes/manageReservations');
 var reservationHistoryRouter = require('./routes/reservationHistory');
 var confirmationRouter = require('./routes/confirmation');
 var checkAvailabilityRouter = require('./routes/checkAvailability');
 var reservationRouter = require('./routes/reservation');
 var paymentRouter = require('./routes/payment');
 var homeRouter = require('./routes/home');
-var adminViewRouter = require('./routes/adminView.js');
-var employeeViewRouter = require('./routes/employeeView.js');
-var editAdminRouter = require('./routes/editAccountAdmin.js');
+var adminViewRouter = require('./routes/adminView');
+var adminManageReservationsRouter = require('./routes/adminManageReservations');
+var employeeViewRouter = require('./routes/employeeView');
+var editAdminRouter = require('./routes/editAccountAdmin');
 
 var app = express();
 
@@ -78,6 +79,7 @@ app.use('/reservation', reservationRouter);
 app.use('/payment', paymentRouter);
 app.use('/home', homeRouter);
 app.use('/adminView', adminViewRouter);
+app.use('/adminManageReservations', adminManageReservationsRouter);
 app.use('/employeeView', employeeViewRouter);
 app.use('/editAccountAdmin', editAdminRouter);
 

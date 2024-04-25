@@ -131,8 +131,8 @@
         <div class="card">
             <h2>Modify Reservation</h2>
             <p>Make changes to existing reservations.</p>
-            <a href="/admin/modifyReservation">Modify Reservation</a>
-            <input type="text" name="reservation_id" placeholder="Reservation ID">
+            <a id="reservationLink" href="#">Modify Reservation</a>
+            <input type="text" id ="reservationId" name="reservationId" placeholder="Reservation ID">
 
         </div>
         <div class=" card">
@@ -153,13 +153,22 @@
         </div>
 
         <script>
-            console.log("Edit account link clicked");
+            
 
             document.getElementById('editAccountLink').addEventListener('click', function () {
+                console.log("Edit account link clicked");
                 var userToEdit = document.getElementById('userToEdit').value;
                 var url = "/editAccountAdmin?userToEdit=" + userToEdit;
                 window.location.href = url;
             });
+
+            document.getElementById('reservationLink').addEventListener('click', function () {
+                console.log("Manage Reservation link clicked");
+                var manageReservationID = document.getElementById('reservationId').value;
+                var url = "/adminManageReservations?manageReservationID=" + manageReservationID;
+                window.location.href = url;
+            });
+
         </script>
 
         <!-- <div class="card">
