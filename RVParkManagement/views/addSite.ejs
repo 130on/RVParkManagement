@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Availability</title>
+  <link rel="stylesheet" href="/css/allViews.css" />
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css" />
+  <script type="text/javascript" src="crypto-js.js"></script>
+  <script>
+    function showRVSizeInput() {
+      var type = document.getElementById("type");
+      var rvSizeInput = document.getElementById("rvSizeInput");
+      if (type.value === "RVParking" || type.value === "DryCamping") {
+        rvSizeInput.style.display = "";
+      } else {
+        rvSizeInput.style.display = "none";
+        document.getElementById("rvSize").value = "";
+        document.getElementById("rvSizeError").textContent = "";
+      }
+    }
+
+    function prepareSubmit() {
+      var type = document.getElementById("type").value;
+      var rvSize = document.getElementById("rvSize");
+      // Clear rvSize if Tenting or Storage is selected
+      if (type === "Tenting" || type === "Storage") {
+        rvSize.value = '';
+      }
+      var isValid = true;
+
+      // Validate RV Size
+      var rvSize = document.getElementById("rvSize").value;
+      var rvSizeError = document.getElementById("rvSizeError");
+      if (!isValidRVSize(rvSize) && (type === "DryCamping" || type === "RVParking")) {
+        rvSizeError.textContent = "Please enter a valid RV size (Integer or decimal).";
+        isValid = false;
+      } else {
+        rvSizeError.textContent = "";
+      }
+
+      // Validate Price Per Night
+      var pricePerNight = document.getElementById("pricePerNight").value;
+      var priceError = document.getElementById("priceError");
+      if (!isValidPrice(pricePerNight)) {
+        priceError.textContent = "Please enter a valid price per night (Integer only).";
+        isValid = false;
+      } else {
+        priceError.textContent = "";
+      }
+
+      // Validate From Date and To Date
+      var fromDate = new Date(document.getElementById("fromDate").value);
+      var toDate = new Date(document.getElementById("toDate").value);
+      var dateError = document.getElementById("dateError");
+
+      // Check if dates are valid and in the future
+      if (!isValidDate(fromDate) || !isValidDate(toDate)) {
+        dateError.textContent = "Please enter valid dates.";
+        isValid = false;
+      } else {
+        dateError.textContent = "";
+      }
+
+      // Check if To Date is later than From Date
+      if (toDate <= fromDate) {
+        dateError.textContent = "\"To Date\" should be later than \"From date\".";
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function isValidRVSize(rvSize) {
+      // Allow digits or decimal
+      return /^\d+(\.\d+)?$/.test(rvSize);
+    }
+
+    function isValidPrice(price) {
+      // Allow digits only
+      return /^\d+$/.test(price);
+    }
+
+    function isValidDate(date) {
+      // Check if date is valid and in the future
+      return date instanceof Date && !isNaN(date) && date > new Date();
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    // Function to handle page load
+    function onPageLoad() {
+      // Reset the page based on the selected type
+      var type = document.getElementById("type").value;
+      if (type === "Tenting" || type === "Storage") {
+        // If the type is "Tenting", hide the RV size input and clear its value and error message
+        document.getElementById("rvSizeInput").style.display = "none";
+        document.getElementById("rvSize").value = "";
+        document.getElementById("rvSizeError").textContent = "";
+      }
+    }
+  </script>
+
+</head>
+
+<body onload="onPageLoad()">
+  <div class="container-fluid vh-100" style="margin-top:10px">
+    <div class="" style="margin-top:100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+          <!-- Back button -->
+          <button class="back-button" onclick="goBack()">
+            < Back</button>
+              <div class="text-center">
+                <h3 class="text-primary">Check Availability</h3>
+              </div>
+              <form method="post" onsubmit="return prepareSubmit()">
+                <div class="p-4">
+                  <div id="siteNumberInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-hash text-white"></i></span>
+                    <input type="text" class="form-control" id="siteNumber" name="siteNumber" placeholder="Site Number">
+                    <p id="rvSizeError" class="text-danger" style="height:25px"></p>
+                  </div>
+                  <div id="maxSizeInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
+                    <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
+                    <p id="rvSizeError" class="text-danger" style="height:25px"></p>
+                  </div>
+                  <div id="priceInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
+                    <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
+                      placeholder="Price Per Night">
+                    <p id="priceError" class="text-danger" style="height:25px"></p>
+                  </div>
+                  <div id="fromDateInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                    <input type="text" class="form-control" id="fromDate" name="fromDate"
+                      placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                      onblur="if(this.value=='') this.type='text'">
+                  </div>
+                  <div id="toDateInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
+                    <input type="text" class="form-control" id="toDate" name="toDate"
+                      placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                      onblur="if(this.value=='') this.type='text'">
+                  </div>
+                  <p id="dateError" class="text-danger" style="height:25px"></p>
+                  <div>
+                    <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
+                  </div>
+                  <div class="text-center">
+                    <button class="btn btn-primary mt-2" type="submit">Search</button>
+                  </div>
+                </div>
+              </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

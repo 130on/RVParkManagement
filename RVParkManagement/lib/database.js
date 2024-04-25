@@ -546,6 +546,83 @@ function createStoredProcedures() {
     }
   });
 
+  sql = "CREATE PROCEDURE IF NOT EXISTS `remove_site`(\n" +
+    "IN new_site_number INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "UPDATE sites \n" +
+    "SET site_status = 'Closed'\n" +
+    "WHERE site_number = new_site_number; \n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure remove_site created if it didn't exist");
+    }
+  });
+
+  //carbon copy of add_site, but the names might as well be different
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `edit_site`(\n" +
+    "IN new_site_number INT,\n" +
+    "IN new_max_size INT,\n" +
+    "IN new_price_per_night INT,\n" +
+    "IN new_site_status VARCHAR(45),\n" +
+    "IN new_reservation_type VARCHAR(45),\n" +
+    "OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "DECLARE siteCount INT;\n" +
+    "SET result = 0;\n" +
+    "SELECT COUNT(*) INTO siteCount\n" +
+    "FROM sites\n" +
+    "WHERE site_number = new_site_number;\n" +
+    "IF siteCount = 0\n" +
+    "THEN \n" +
+    "INSERT INTO sites (site_number, max_size, price_per_night, site_status, reservation_type_id)\n" +
+    "VALUES (new_site_number, new_max_size, new_price_per_night, new_site_status," +
+    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1));\n" +
+    "ELSE\n" +
+    "SET result = 1;\n" +
+    "END IF;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure create_site created if it didn't exist");
+    }
+  });
+
+  sql =
+    "CREATE PROCEDURE IF NOT EXISTS `add_manage_site_log`(\n" +
+    "IN new_card_number VARCHAR(16),\n" +
+    "IN new_amount decimal(8,2),\n" +
+    "IN new_payment_date DATE,\n" +
+    "IN new_payment_status VARCHAR(10),\n" +
+    "IN new_reason VARCHAR(255),\n" +
+    "IN new_user_id INT,\n" +
+    "OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "INSERT INTO payments (card_number, amount, payment_date, payment_status, reason, user_id)\n" +
+    "VALUES (new_card_number, new_amount, new_payment_date, new_payment_status, new_reason, new_user_id);\n" +
+    "SET result = LAST_INSERT_ID();\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure add_manage_site_log created if it didn't exist");
+    }
+  });
+
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `check_availability`(\n" +
     "IN new_reservation_type VARCHAR(45),\n" +
@@ -562,6 +639,7 @@ function createStoredProcedures() {
     "WHERE sites.reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type) \n" +
     "AND (new_size IS NULL OR sites.max_size >= new_size) \n" +
     "AND sites.price_per_night <= new_price_per_night \n" +
+    "AND sites.site_status = 'Active' \n" +
     "AND NOT EXISTS (\n" +
     "    SELECT 1\n" +
     "    FROM reservations\n" +
