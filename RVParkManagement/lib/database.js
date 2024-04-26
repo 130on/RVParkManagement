@@ -515,6 +515,7 @@ function createStoredProcedures() {
 
   sql =
     "CREATE PROCEDURE IF NOT EXISTS `create_site`(\n" +
+    "IN new_username VARCHAR(45),\n" +
     "IN new_site_number INT,\n" +
     "IN new_max_size INT,\n" +
     "IN new_price_per_night INT,\n" +
@@ -533,7 +534,11 @@ function createStoredProcedures() {
     "INSERT INTO sites (site_number, max_size, price_per_night, site_status, reservation_type_id)\n" +
     "VALUES (new_site_number, new_max_size, new_price_per_night, new_site_status," +
     "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1));\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "        VALUES ((SELECT user_id FROM users WHERE username = new_username), (SELECT site_id FROM sites WHERE site_number = new_site_number), CURDATE(), CONCAT('AddSite: Site ', new_site_number, ' added successfully'));\n" +
     "ELSE\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "        VALUES ((SELECT user_id FROM users WHERE username = new_username), (SELECT site_id FROM sites WHERE site_number = new_site_number), CURDATE(), CONCAT('AddSite: Site ', new_site_number, ' already exists'));\n" +
     "SET result = 1;\n" +
     "END IF;\n" +
     "END;";
@@ -547,14 +552,31 @@ function createStoredProcedures() {
   });
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `remove_site`(\n" +
-    "IN new_site_number INT,\n" +
-    "IN new_site_status VARCHAR(45)\n" +
+    "    IN new_username VARCHAR(45),\n" +
+    "    IN new_site_number INT,\n" +
+    "    IN new_site_status VARCHAR(45),\n" +
+    "    OUT result INT\n" +
     ")\n" +
     "BEGIN\n" +
-    "UPDATE sites \n" +
-    "SET site_status = new_site_status\n" +
-    "WHERE site_number = new_site_number; \n" +
-    "END;";
+    "    DECLARE future_reservations INT;\n" +
+    "    SET result = 0;\n" +
+    "    SELECT COUNT(*) INTO future_reservations\n" +
+    "    FROM reservations\n" +
+    "    WHERE site_id = (SELECT site_id FROM sites WHERE site_number = new_site_number)\n" +
+    "    AND to_date >= CURDATE()\n" +
+    "    AND reservation_status_id IN (SELECT reservation_status_id FROM reservation_status WHERE status = 'Active');\n" +
+    "    IF future_reservations = 0 THEN\n" +
+    "        UPDATE sites \n" +
+    "        SET site_status = new_site_status\n" +
+    "        WHERE site_number = new_site_number;\n" +
+    "        INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "        VALUES ((SELECT user_id FROM users WHERE username = new_username), (SELECT site_id FROM sites WHERE site_number = new_site_number), CURDATE(), CONCAT('EditSite: Site ', new_site_number, 's status changed to ', new_site_status));\n" +
+    "    ELSE\n" +
+    "        INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "        VALUES ((SELECT user_id FROM users WHERE username = new_username), (SELECT site_id FROM sites WHERE site_number = new_site_number), CURDATE(), CONCAT('EditSite: Site ', new_site_number, ' could not be closed due to active reservations'));\n" +
+    "        SET result = 1;\n" +
+    "    END IF;\n" +
+    "END\n";
 
   con.query(sql, function (err, results, fields) {
     if (err) {
@@ -565,45 +587,82 @@ function createStoredProcedures() {
     }
   });
 
-  //carbon copy of add_site, but the names might as well be different
-  sql =
-  "CREATE PROCEDURE IF NOT EXISTS `edit_site`(\n" +
-  "IN old_site_number INT,\n" +
-  "IN new_site_number INT,\n" +
-  "IN new_max_size INT,\n" +
-  "IN new_price_per_night INT,\n" +
-  "IN new_site_status VARCHAR(45),\n" +
-  "IN new_reservation_type VARCHAR(45),\n" +
-  "OUT result INT\n" +
-  ")\n" +
-  "BEGIN\n" +
-  "DECLARE siteCount INT;\n" +
-  "DECLARE siteMatchCount INT;\n" +
-  "SET result = 0;\n" + 
 
-  "SELECT COUNT(*) INTO siteCount FROM sites WHERE site_number = new_site_number AND site_number <> old_site_number;\n" +
-  "IF siteCount > 0 THEN\n" +
-  "    SET result = 1;\n" +
-  "ELSE\n" +
-  "    SELECT COUNT(*) INTO siteMatchCount FROM sites WHERE site_number = old_site_number;\n" +
-  "    IF siteMatchCount > 0 THEN\n" +
-  "        UPDATE sites\n" +
-  "        SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
-  "            reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +
-  "        WHERE site_number = old_site_number;\n" +
-  "    ELSE\n" +
-  "        SET result = 1;\n" +
-  "    END IF;\n" +
-  "END IF;\n" +
-  "END;";
-con.query(sql, function (err, results, fields) {
-  if (err) {
-    console.log(err.message);
-    throw err;
-  } else {
-    console.log("database.js: procedure edit_site created if it didn't exist");
-  }
-});
+  //carbon copy of add_site, but the names might as well be different
+  sql = " CREATE PROCEDURE IF NOT EXISTS edit_site(\n" +
+    "IN new_username VARCHAR(45),\n" +
+    "IN old_site_number INT,\n" +
+    "IN new_site_number INT,\n" +
+    "IN new_max_size INT,\n" +
+    "IN new_price_per_night INT,\n" +
+    "IN new_site_status VARCHAR(45),\n" +
+    "IN new_reservation_type VARCHAR(45),\n" +
+    "OUT result INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "DECLARE siteCount INT;\n" +
+    "DECLARE siteMatchCount INT;\n" +
+    "DECLARE siteId INT;\n" +
+    "DECLARE future_reservations INT;\n\n" +
+    "SET result = 0;\n\n" +
+    "SELECT site_id INTO siteId FROM sites WHERE site_number = old_site_number LIMIT 1;\n" +
+    "SELECT COUNT(*) INTO siteCount FROM sites WHERE site_number = new_site_number AND site_number <> old_site_number;\n" +
+    "IF new_site_status = 'Closed' AND siteCount = 0 THEN\n" +
+    "SELECT COUNT(*) INTO future_reservations\n" +
+    "FROM reservations\n" +
+    "WHERE site_id = siteId\n" +
+    "AND to_date >= CURDATE()\n" +
+    "AND reservation_status_id IN (SELECT reservation_status_id FROM reservation_status WHERE status = 'Active');\n\n" +
+    "IF future_reservations = 0 THEN\n" +
+    "UPDATE sites\n" +
+    "SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
+    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +    "WHERE site_id = siteId;\n\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, 's status changed to ', new_site_status));\n" +
+    "IF new_site_number != old_site_number THEN\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number ', old_site_number, ' Changed from ', old_site_number, ' -> ', new_site_number));\n" +
+    "END IF;"+
+    "ELSE\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, ' could not be closed due to active reservations'));\n" +
+    "SET result = 2;\n" +
+    "END IF;\n" +
+    "ELSE\n" +
+    "SET result = 0;\n\n" +
+    "IF siteCount > 0 THEN\n" +
+    "SET result = 1;\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', new_site_number, ' already exists'));\n" +
+    "ELSE\n" +
+    "SELECT COUNT(*) INTO siteMatchCount FROM sites WHERE site_number = old_site_number;\n" +
+    "IF siteMatchCount > 0 THEN\n" +
+    "IF new_site_number = old_site_number THEN\n" +
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', new_site_number, 's properties were changed'));\n" +
+    "ELSE\n"+
+    "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
+    "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number Changed from ', old_site_number, ' -> ', new_site_number, ', site properties were changed'));\n" +
+    "END IF;\n" +
+    "UPDATE sites\n" +
+    "SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
+    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +
+    "WHERE site_id = siteId;\n" +
+    "ELSE\n" +
+    "SET result = 3;\n" +
+    "END IF;\n" +
+    "END IF;\n" +
+    "END IF;\n" +
+    "END;\n";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure edit_site created if it didn't exist");
+    }
+  });
 
 
 
@@ -676,8 +735,11 @@ con.query(sql, function (err, results, fields) {
     "    AND reservations.from_date <= new_to_date\n" +
     "    AND reservations.to_date >= new_from_date\n" +
     "    AND reservation_status.status = 'Active'\n" +
-    ");\n" +
+    ")\n" +
+    "ORDER BY sites.site_number;\n" +
     "END;";
+
+
 
   con.query(sql, function (err, results, fields) {
     if (err) {
@@ -1003,22 +1065,22 @@ function addDummyData() {
     console.log("database.js: Added 'Completed' to reservation_status");
   });
 
-  sql = "CALL insert_reservation_type('RVParking')";
+  sql = "CALL insert_reservation_type('RV Parking')";
   con.query(sql, function (err, rows) {
     if (err) {
       console.log(err.message);
       throw err;
     }
-    console.log("database.js: Added 'RVParking' to reservation_types");
+    console.log("database.js: Added 'RV Parking' to reservation_types");
   });
 
-  sql = "CALL insert_reservation_type('DryCamping')";
+  sql = "CALL insert_reservation_type('Dry Camping')";
   con.query(sql, function (err, rows) {
     if (err) {
       console.log(err.message);
       throw err;
     }
-    console.log("database.js: Added 'DryCamping' to reservation_types");
+    console.log("database.js: Added 'Dry Camping' to reservation_types");
   });
 
   sql = "CALL insert_reservation_type('Tenting')";
@@ -1028,33 +1090,6 @@ function addDummyData() {
       throw err;
     }
     console.log("database.js: Added 'Tenting' to reservation_types");
-  });
-
-  sql = "CALL create_site(1, 39, 17, 'Active', 'RVParking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site(3, 46, 19, 'Active', 'RVParking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site(2, NULL, 10, 'Active', 'Tenting', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
   });
 
   sql = "CALL register_user('admin', 'admin', 'admin', 'admin@gmail.com', '8017753250', '757e31954b06c8c0e3b2f026d507b78a7a0f9d76e545cb70f631b0e1004f086b',\n" +
@@ -1068,6 +1103,33 @@ function addDummyData() {
     console.log("database.js: Added admin account to users");
   });
 
+
+  sql = "CALL create_site('admin', 1, 39, 17, 'Active', 'RV Parking', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
+
+  sql = "CALL create_site('admin', 3, 46, 19, 'Active', 'RV Parking', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
+
+  sql = "CALL create_site('admin', 2, NULL, 10, 'Active', 'Tenting', @result)";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added site to sites");
+  });
 
 }
 

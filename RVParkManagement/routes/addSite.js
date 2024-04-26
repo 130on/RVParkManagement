@@ -14,7 +14,7 @@ router.post('/', function (req, res, next) {
   // Extract form values from the request body
   const siteNumber = req.body.siteNumber;
   const type = req.body.type;
-  const maxSize = req.body.maxSize;
+  var maxSize = req.body.maxSize;
   if (maxSize == '') {
     maxSize = null;
   }
@@ -25,8 +25,8 @@ router.post('/', function (req, res, next) {
   // Redirect to /reservation route with form values in the request body
   //res.redirect('/reservation?type=' + type + '&rvSize=' + rvSize + '&pricePerNight=' + pricePerNight + '&fromDate=' + fromDate + '&toDate=' + toDate);
   console.log("addSite.js: siteNumber: " + siteNumber + " type: " + type + " maxSize: " + maxSize + " pricePerNight: " + pricePerNight + " siteStatus: " + siteStatus);
-  let sql = "CALL create_site(?, ?, ?, ?, ?, @result); select @result";
-  dbCon.query(sql, [siteNumber, maxSize, pricePerNight, siteStatus, type], function (err, rows) {
+  let sql = "CALL create_site(?, ?, ?, ?, ?, ?, @result); select @result";
+  dbCon.query(sql, [req.session.username, siteNumber, maxSize, pricePerNight, siteStatus, type], function (err, rows) {
     if (err) {
       throw err;
     }
@@ -39,7 +39,7 @@ router.post('/', function (req, res, next) {
       res.redirect('/removeSite?siteNumber=' + siteNumber);
   
     } else if (rows[1][0]['@result'] == 1) {
-      console.log("addSite.js: Username already exists.  Reload register page with that message.");
+      console.log("addSite.js: Site number" + siteNumber + "already exists.  Reload register page with that message.");
       return res.render('addSite', {
         message: "The site_number '" + siteNumber + "' already exists",
         formData: {

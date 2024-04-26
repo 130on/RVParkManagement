@@ -18,7 +18,7 @@ router.get('/', function (req, res, next) {
     if (manageSite.length > 0) {
       const site = manageSite[0];
       console.log("editSite.js: this is the site: ", site);
-      res.render('editSite', { site: site, message: message});
+      res.render('editSite', { site: site, message: message });
     }
     else {
       console.log("editSite.js: there is not a site with this site_number.");
@@ -45,8 +45,8 @@ router.post('/', function (req, res, next) {
   // Redirect to /reservation route with form values in the request body
   //res.redirect('/reservation?type=' + type + '&rvSize=' + rvSize + '&pricePerNight=' + pricePerNight + '&fromDate=' + fromDate + '&toDate=' + toDate);
   console.log("editSite.js: siteNumber: " + siteNumber + " type: " + type + " maxSize: " + maxSize + " pricePerNight: " + pricePerNight + " siteStatus: " + siteStatus);
-  let sql = "CALL edit_site(?, ?, ?, ?, ?, ?, @result); select @result";
-  dbCon.query(sql, [oldSiteNumber, siteNumber, maxSize, pricePerNight, siteStatus, type], function (err, rows) {
+  let sql = "CALL edit_site(?, ?, ?, ?, ?, ?, ?, @result); select @result;";
+  dbCon.query(sql, [req.session.username, oldSiteNumber, siteNumber, maxSize, pricePerNight, siteStatus, type], function (err, rows) {
     if (err) {
       throw err;
     }
@@ -59,8 +59,14 @@ router.post('/', function (req, res, next) {
 
     } else if (rows[1][0]['@result'] == 1) {
       console.log("editSite.js: That Site Number already exists.  Reload editSite page with that message.");
-      return res.redirect('editSite?siteNumber=' + oldSiteNumber + "&message=The site_number '" + siteNumber + "' already exists");
+      return res.redirect('editSite?siteNumber=' + oldSiteNumber + "&message=The site_number '" + siteNumber + "' already exists.");
     }
+
+    else if (rows[1][0]['@result'] == 2) {
+      console.log("editSite.js: Cannot Close Site " + oldSiteNumber + " due to it having open reservations.");
+      return res.redirect('editSite?siteNumber=' + oldSiteNumber + "&message=Cannot Close Site " + oldSiteNumber + " due to it having open reservations.");
+    }
+
   });
 });
 

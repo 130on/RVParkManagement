@@ -14,7 +14,7 @@
     function showRVSizeInput() {
       var type = document.getElementById("type");
       var rvSizeInput = document.getElementById("rvSizeInput");
-      if (type.value === "RVParking" || type.value === "DryCamping") {
+      if (type.value === "RV Parking" || type.value === "Dry Camping") {
         rvSizeInput.style.display = "";
       } else {
         rvSizeInput.style.display = "none";
@@ -35,7 +35,7 @@
       // Validate RV Size
       var rvSize = document.getElementById("rvSize").value;
       var rvSizeError = document.getElementById("rvSizeError");
-      if (!isValidRVSize(rvSize) && (type === "DryCamping" || type === "RVParking")) {
+      if (!isValidRVSize(rvSize) && (type === "Dry Camping" || type === "RV Parking")) {
         rvSizeError.textContent = "Please enter a valid RV size (Integer or decimal).";
         isValid = false;
       } else {
@@ -124,9 +124,9 @@
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
                     <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
-                      <option value="RVParking">RV Parking</option>
+                      <option value="RV Parking">RV Parking</option>
                       <option value="Tenting">Tenting</option>
-                      <option value="DryCamping">Dry Camping</option>
+                      <option value="Dry Camping">Dry Camping</option>
                       <option value="Storage">Storage</option>
                     </select>
                   </div>
