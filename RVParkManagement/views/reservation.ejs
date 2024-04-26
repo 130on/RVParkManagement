@@ -16,22 +16,39 @@
             margin-bottom: 10px;
             line-height: 0.7;
         }
+    
+        .RVParkImage {
+            position: fixed;
+            top: 50%; 
+            right: 20px;
+            transform: translateY(-50%); 
+            max-width: 60vw; 
+            max-height: 110vh;
+            z-index: 1000;
+            border: 3px solid #3d3c3c; 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+        }
+        .reservation-container {
+            max-width: 60%;
+        }
     </style>
+    
     <script>
         function goBack() {
-            window.history.back(); // Navigate back
+            window.history.back();
         }
     </script>
 </head>
 
 <body>
     <div class="container-fluid vh-100" style="margin-top:10px">
-        
-                <div class="" style="margin-top:100px">
-                    <div class="rounded d-flex justify-content-center">
-                        <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light">
-                            <button class="back-button" onclick="goBack()">
-            <                    Back</button>
+
+        <div class="" style="margin-top:100px">
+            <div class="rounded d-flex">
+                <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light reservation-container">
+                    <button class="back-button" onclick="goBack()">
+                        < Back</button>
                             <div class="text-center">
                                 <h3 class="text-dark">Make A Reservation</h3>
                             </div>
@@ -60,7 +77,6 @@
                                 // Return the formatted date string
                                 return month + ' ' + day + daySuffix + ', ' + year; 
                             }
-                            
                              %>
                             <% if (siteReservations.length> 0) { %>
                                 <% siteReservations.forEach(function(site) { %>
@@ -100,7 +116,10 @@
                                             <p>There are no sites available for reservations</p>
                                             <% } %>
                         </div>
+                        <img class="RVParkImage" src="/images/rvpark.jpeg"
+                    alt="RV Park">
                     </div>
+                    
                 </div>
     </div>
 </body>
