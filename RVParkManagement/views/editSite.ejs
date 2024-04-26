@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Check Availability</title>
+  <title>Edit Site</title>
   <link rel="stylesheet" href="/css/allViews.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="font/bootstrap-icons.css" />
@@ -13,33 +13,33 @@
   <script>
     function showRVSizeInput() {
       var type = document.getElementById("type");
-      var rvSizeInput = document.getElementById("rvSizeInput");
+      var maxSizeInput = document.getElementById("maxSizeInput");
       if (type.value === "RVParking" || type.value === "DryCamping") {
-        rvSizeInput.style.display = "";
+        maxSizeInput.style.display = "";
       } else {
-        rvSizeInput.style.display = "none";
-        document.getElementById("rvSize").value = "";
-        document.getElementById("rvSizeError").textContent = "";
+        maxSizeInput.style.display = "none";
+        document.getElementById("maxSize").value = "";
+        document.getElementById("maxSizeError").textContent = "";
       }
     }
 
     function prepareSubmit() {
       var type = document.getElementById("type").value;
-      var rvSize = document.getElementById("rvSize");
-      // Clear rvSize if Tenting or Storage is selected
+      var maxSize = document.getElementById("maxSize");
+      // Clear maxSize if Tenting or Storage is selected
       if (type === "Tenting" || type === "Storage") {
-        rvSize.value = '';
+        maxSize.value = '';
       }
       var isValid = true;
 
       // Validate RV Size
-      var rvSize = document.getElementById("rvSize").value;
-      var rvSizeError = document.getElementById("rvSizeError");
-      if (!isValidRVSize(rvSize) && (type === "DryCamping" || type === "RVParking")) {
-        rvSizeError.textContent = "Please enter a valid RV size (Integer or decimal).";
+      var maxSize = document.getElementById("maxSize").value;
+      var maxSizeError = document.getElementById("maxSizeError");
+      if (!isValidRVSize(maxSize) && (type === "DryCamping" || type === "RVParking")) {
+        maxSizeError.textContent = "Please enter a valid RV Max Size (Integer or decimal).";
         isValid = false;
       } else {
-        rvSizeError.textContent = "";
+        maxSizeError.textContent = "";
       }
 
       // Validate Price Per Night
@@ -50,25 +50,6 @@
         isValid = false;
       } else {
         priceError.textContent = "";
-      }
-
-      // Validate From Date and To Date
-      var fromDate = new Date(document.getElementById("fromDate").value);
-      var toDate = new Date(document.getElementById("toDate").value);
-      var dateError = document.getElementById("dateError");
-
-      // Check if dates are valid and in the future
-      if (!isValidDate(fromDate) || !isValidDate(toDate)) {
-        dateError.textContent = "Please enter valid dates.";
-        isValid = false;
-      } else {
-        dateError.textContent = "";
-      }
-
-      // Check if To Date is later than From Date
-      if (toDate <= fromDate) {
-        dateError.textContent = "\"To Date\" should be later than \"From date\".";
-        isValid = false;
       }
 
       return isValid;
@@ -84,11 +65,6 @@
       return /^\d+$/.test(price);
     }
 
-    function isValidDate(date) {
-      // Check if date is valid and in the future
-      return date instanceof Date && !isNaN(date) && date > new Date();
-    }
-
     function goBack() {
       window.history.back();
     }
@@ -99,9 +75,9 @@
       var type = document.getElementById("type").value;
       if (type === "Tenting" || type === "Storage") {
         // If the type is "Tenting", hide the RV size input and clear its value and error message
-        document.getElementById("rvSizeInput").style.display = "none";
-        document.getElementById("rvSize").value = "";
-        document.getElementById("rvSizeError").textContent = "";
+        document.getElementById("maxSizeInput").style.display = "none";
+        document.getElementById("maxSize").value = "";
+        document.getElementById("maxSizeError").textContent = "";
       }
     }
   </script>
@@ -117,48 +93,57 @@
           <button class="back-button" onclick="goBack()">
             < Back</button>
               <div class="text-center">
-                <h3 class="text-primary">Check Availability</h3>
+                <h3 class="text-primary">Edit Site</h3>
               </div>
               <form method="post" onsubmit="return prepareSubmit()">
                 <div class="p-4">
+                  <p>Editing Site_ID: <%= site[0].site_id %>
+                  </p>
+                  <div id="siteNumberInput" class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-hash text-white"></i></span>
+                    <input type="text" class="form-control" id="siteNumber" name="siteNumber" placeholder="Site Number"
+                      value="<%= site[0].site_number %>">
+                  </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
                     <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
-                      <option value="RVParking">RV Parking</option>
-                      <option value="Tenting">Tenting</option>
-                      <option value="DryCamping">Dry Camping</option>
-                      <option value="Storage">Storage</option>
+                      <option value="RVParking" <% if (site[0].reservation_type==='RVParking' ) { %>selected <% } %>>RV
+                          Parking</option>
+                      <option value="Tenting" <% if (site[0].reservation_type==='Tenting' ) { %>selected <% } %>>Tenting
+                      </option>
+                      <option value="DryCamping" <% if (site[0].reservation_type==='DryCamping' ) { %>selected <% } %>
+                          >Dry Camping</option>
+                      <option value="Storage" <% if (site[0].reservation_type==='Storage' ) { %>selected <% } %>>Storage
+                      </option>
                     </select>
                   </div>
-                  <div id="rvSizeInput" class="input-group mb-3">
+                  <div id="maxSizeInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
-                    <input type="text" class="form-control" id="rvSize" name="rvSize" placeholder="RV Size (ft)">
-                    <p id="rvSizeError" class="text-danger" style="height:25px"></p>
+                    <input type="text" class="form-control" id="maxSize" name="maxSize" placeholder="Max RV Size (ft)"
+                      value="<%= site[0].max_size %>">
+                    <p id="maxSizeError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div id="priceInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
                     <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
-                      placeholder="Price Per Night">
+                      placeholder="Price Per Night" value="<%= site[0].price_per_night %>">
                     <p id="priceError" class="text-danger" style="height:25px"></p>
                   </div>
-                  <div id="fromDateInput" class="input-group mb-3">
-                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                    <input type="text" class="form-control" id="fromDate" name="fromDate"
-                      placeholder="From Date (MM/DD/YYYY)" onfocus="(this.type='date')"
-                      onblur="if(this.value=='') this.type='text'">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-primary"><i class="bi bi-asterisk text-white"></i></span>
+                    <select class="form-select" id="siteStatus" name="siteStatus"">
+                      <option value="Active" <% if (site[0].site_status==='Active' ) { %>selected <% } %>>Active
+                        </option>
+                        <option value="Closed" <% if (site[0].site_status==='Closed' ) { %>selected <% } %>>Closed
+                        </option>
+                    </select>
                   </div>
-                  <div id="toDateInput" class="input-group mb-3">
-                    <span class="input-group-text bg-primary"><i class="bi bi-calendar text-white"></i></span>
-                    <input type="text" class="form-control" id="toDate" name="toDate"
-                      placeholder="To Date (MM/DD/YYYY)" onfocus="(this.type='date')"
-                      onblur="if(this.value=='') this.type='text'">
-                  </div>
-                  <p id="dateError" class="text-danger" style="height:25px"></p>
+                  <input type="hidden" id="oldSiteNumber" name="oldSiteNumber" value="<%= site[0].site_number %>">
                   <div>
                     <p id="message" class="text-danger" style="height:25px"><%- locals.message %></p>
                   </div>
                   <div class="text-center">
-                    <button class="btn btn-primary mt-2" type="submit">Search</button>
+                    <button class="btn btn-primary mt-2" type="submit">Save Changes</button>
                   </div>
                 </div>
               </form>

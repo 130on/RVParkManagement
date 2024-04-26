@@ -6,22 +6,22 @@ var dbCon = require('../lib/database');
 /* GET home page. */
 router.get('/', function (req, res, next) {
   console.log("removeSite.js: GET");
-  var manageReservationID = req.query.manageReservationID;
+  const siteNumber = req.query.siteNumber;
 
-  sql = "CALL get_reservation(?);";
-  dbCon.query(sql, [manageReservationID], function (err, manageReservation) {
+  sql = "CALL get_site(?);";
+  dbCon.query(sql, [siteNumber], function (err, manageSite) {
     if (err) {
       throw err;
     }
 
-    if (manageReservation.length > 0) {
-      const reservation = manageReservation[0];
-      console.log("removeSite.js: this is the reservation: ", reservation);
-      res.render('removeSite', { reservation: reservation, manageReservationID });
+    if (manageSite.length > 0) {
+      const site = manageSite[0];
+      console.log("removeSite.js: this is the site: ", site);
+      res.render('removeSite', { site: site });
     }
     else {
-      console.log("removeSite.js: there is not a reservation with this ID.");
-      res.render('removeSite', { reservation: [] });
+      console.log("removeSite.js: there is not a site with this Site Number.");
+      res.render('removeSite', { site: [] });
     }
   });
 
@@ -43,60 +43,44 @@ router.post('/', function (req, res, next) {
   console.log("removeSite.js: POST");
 
   //run cancel reservation here
-  var reservation_id = req.body.reservation_id;
-  console.log("removeSite.js: POST - This is the reservationID: ", reservation_id);
+  const siteNumber = req.body.siteNumber;
+  console.log("removeSite.js: POST - This is the site Number: ", siteNumber);
 
-  let sql = "CALL cancel_reservation(?);";
-  dbCon.query(sql, [reservation_id], function (err, result) {
-    if (err) {
-      console.log("removeSite.js: procedure cancel_reservation failed");
-      throw err;
-    }
+  const siteStatus = req.body.siteStatus;
+  console.log("removeSite.js: POST - This is the current status of the site: ", siteStatus);
 
-    if (result.length > 0) {
-      console.log("removeSite.js: POST - reservation was canceled successfully");
-    }
+  let sql = "";
 
-    sql = "CALL refund_payment(?);";
-    dbCon.query(sql, [reservation_id], function (err, result) {
+
+  if (siteStatus === "Active") {
+    sql = "CALL remove_site(?, ?);";
+    dbCon.query(sql, [siteNumber, 'Closed'], function (err, result) {
       if (err) {
-        console.log("removeSite.js: refund_payment method failed");
+        console.log("removeSite.js: procedure remove_site failed");
         throw err;
       }
 
       if (result.length > 0) {
-        console.log("removeSite.js: Payment was refunded");
+        console.log("removeSite.js: POST - site was removed successfully");
       }
 
-      let sql = "SELECT payments.card_number, payments.user_id\n" +
-        "FROM payments\n" +
-        "JOIN reservations ON reservations.payment_id = payments.payment_id\n" +
-        "WHERE reservations.reservation_id = (?);\n";
-      dbCon.query(sql, [reservation_id], function (err, results) {
-        if (err) {
-          throw err;
-        }
-        if (results.length > 0) {
-          cardNumber = results[0].card_number;
-          userId = results[0].user_id;
-        }
-
-        sql = "CALL make_payment(?, ?, ?, ?, ?, ?, @result); SELECT @result";
-        dbCon.query(sql, [cardNumber, 10, todaysDate, 'Active', 'Cancellation Fee', userId], function (err, results) {
-          if (err) {
-            console.log("adminManageReservations.js: make_payment method failed");
-            throw err;
-          }
-          const paymentId = results[1][0]['@result'];
-
-          if (result.lenth > 0) {
-            console.log("adminManageReservations.js: Cancellation fee was payed");
-          }
-          res.redirect('/adminManageReservations?manageReservationID=' + reservation_id);
-        });
-      });
+      res.redirect('/removeSite?siteNumber=' + siteNumber);
     });
-  });
+  } else if (siteStatus === "Closed") {
+    sql = "CALL remove_site(?, ?);";
+    dbCon.query(sql, [siteNumber, 'Active'], function (err, result) {
+      if (err) {
+        console.log("removeSite.js: procedure remove_site failed");
+        throw err;
+      }
+
+      if (result.length > 0) {
+        console.log("removeSite.js: POST - site was removed successfully");
+      }
+
+      res.redirect('/removeSite?siteNumber=' + siteNumber);
+    });
+  }
 });
 
 
