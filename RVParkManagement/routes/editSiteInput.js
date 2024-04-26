@@ -8,7 +8,7 @@ var dbCon = require('../lib/database');
 router.get('/', function (req, res, next) {
   console.log("editSiteInput.js: GET");
 
-  res.render('editSiteInput', { });
+  res.render('editSiteInput', {});
 
   // var userId;
   // let sql = "SELECT user_id\n" +
@@ -25,24 +25,8 @@ router.post('/', function (req, res, next) {
 
   console.log("Parameters:", siteNumber);
 
-  // sql = "CALL remove_site(?);";
-  // dbCon.query(sql, [siteNumber], function (err, results) {
-  //   if (err) {
-  //     throw err;
-  //   }
+  res.redirect('editSite?siteNumber=' + siteNumber);
 
-    // sql = "CALL create_reservation(?, ?, ?, ?, ?, ?, ?, ?, ?, @result); SELECT @result";
-    // dbCon.query(sql, [req.session.userId, reservationType, siteId, paymentId, size, todaysDate, 'Active', fromDate, toDate], function (err, results) {
-    //   if (err) {
-    //     throw err;
-    //   }
-    //   const reservationId = results[1][0]['@result'];
-    //   console.log("Reservation ID:", reservationId);
-
-       res.redirect('removeSite?site_number=' + siteNumber)
-    // });
-  // });
 });
-
 module.exports = router;
 

@@ -39,7 +39,7 @@ router.post('/', function (req, res, next) {
     //   const reservationId = results[1][0]['@result'];
     //   console.log("Reservation ID:", reservationId);
 
-       res.redirect('removeSite?site_number=' + siteNumber)
+       res.redirect('removeSite?siteNumber=' + siteNumber)
     // });
   //});
 });

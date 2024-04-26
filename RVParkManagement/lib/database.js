@@ -130,15 +130,15 @@ function createTables() {
 
 
   sql = "CREATE TABLE IF NOT EXISTS sites (\n" +
-    "site_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "site_id INT(5) ZEROFILL NOT NULL AUTO_INCREMENT,\n" +
     "site_number INT NOT NULL,\n" +
-    "max_size int, \n" +
+    "max_size INT, \n" +
     "price_per_night INT NOT NULL, \n" +
     "site_status VARCHAR(45) NOT NULL, \n" +
     "reservation_type_id INT NOT NULL, \n" +
     "PRIMARY KEY (site_id), \n" +
     "FOREIGN KEY (reservation_type_id) REFERENCES reservation_types(reservation_type_id)\n" +
-    ")";
+    ") AUTO_INCREMENT = 10001";
   con.execute(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
@@ -152,7 +152,7 @@ function createTables() {
   sql = "CREATE TABLE IF NOT EXISTS managing_sites_log (\n" +
     "log_id INT NOT NULL AUTO_INCREMENT,\n" +
     "user_id INT(6) ZEROFILL NOT NULL, \n" +
-    "site_id INT NOT NULL, \n" +
+    "site_id INT(5) ZEROFILL NOT NULL, \n" +
     "log_date date NOT NULL, \n" +
     "note VARCHAR(255), \n" +
     "PRIMARY KEY (log_id), \n" +
@@ -208,7 +208,7 @@ function createTables() {
     "reservation_id INT(7) NOT NULL AUTO_INCREMENT,\n" +
     "user_id INT(6) ZEROFILL NOT NULL,\n" +
     "reservation_type_id INT NOT NULL, \n" +
-    "site_id INT NOT NULL, \n" +
+    "site_id INT(5) ZEROFILL NOT NULL, \n" +
     "payment_id INT NOT NULL, \n" +
     "rv_size DECIMAL(5,2), \n" +
     "date_of_reservation DATE NOT NULL, \n" +
@@ -547,11 +547,12 @@ function createStoredProcedures() {
   });
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `remove_site`(\n" +
-    "IN new_site_number INT\n" +
+    "IN new_site_number INT,\n" +
+    "IN new_site_status VARCHAR(45)\n" +
     ")\n" +
     "BEGIN\n" +
     "UPDATE sites \n" +
-    "SET site_status = 'Closed'\n" +
+    "SET site_status = new_site_status\n" +
     "WHERE site_number = new_site_number; \n" +
     "END;";
 
@@ -566,37 +567,64 @@ function createStoredProcedures() {
 
   //carbon copy of add_site, but the names might as well be different
   sql =
-    "CREATE PROCEDURE IF NOT EXISTS `edit_site`(\n" +
-    "IN new_site_number INT,\n" +
-    "IN new_max_size INT,\n" +
-    "IN new_price_per_night INT,\n" +
-    "IN new_site_status VARCHAR(45),\n" +
-    "IN new_reservation_type VARCHAR(45),\n" +
-    "OUT result INT\n" +
+  "CREATE PROCEDURE IF NOT EXISTS `edit_site`(\n" +
+  "IN old_site_number INT,\n" +
+  "IN new_site_number INT,\n" +
+  "IN new_max_size INT,\n" +
+  "IN new_price_per_night INT,\n" +
+  "IN new_site_status VARCHAR(45),\n" +
+  "IN new_reservation_type VARCHAR(45),\n" +
+  "OUT result INT\n" +
+  ")\n" +
+  "BEGIN\n" +
+  "DECLARE siteCount INT;\n" +
+  "DECLARE siteMatchCount INT;\n" +
+  "SET result = 0;\n" + 
+
+  "SELECT COUNT(*) INTO siteCount FROM sites WHERE site_number = new_site_number AND site_number <> old_site_number;\n" +
+  "IF siteCount > 0 THEN\n" +
+  "    SET result = 1;\n" +
+  "ELSE\n" +
+  "    SELECT COUNT(*) INTO siteMatchCount FROM sites WHERE site_number = old_site_number;\n" +
+  "    IF siteMatchCount > 0 THEN\n" +
+  "        UPDATE sites\n" +
+  "        SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
+  "            reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +
+  "        WHERE site_number = old_site_number;\n" +
+  "    ELSE\n" +
+  "        SET result = 1;\n" +
+  "    END IF;\n" +
+  "END IF;\n" +
+  "END;";
+con.query(sql, function (err, results, fields) {
+  if (err) {
+    console.log(err.message);
+    throw err;
+  } else {
+    console.log("database.js: procedure edit_site created if it didn't exist");
+  }
+});
+
+
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_site`(\n" +
+    "IN new_site_number VARCHAR(255)\n" +
     ")\n" +
     "BEGIN\n" +
-    "DECLARE siteCount INT;\n" +
-    "SET result = 0;\n" +
-    "SELECT COUNT(*) INTO siteCount\n" +
-    "FROM sites\n" +
-    "WHERE site_number = new_site_number;\n" +
-    "IF siteCount = 0\n" +
-    "THEN \n" +
-    "INSERT INTO sites (site_number, max_size, price_per_night, site_status, reservation_type_id)\n" +
-    "VALUES (new_site_number, new_max_size, new_price_per_night, new_site_status," +
-    "(SELECT reservation_type_id FROM reservation_types WHERE reservation_types.reservation_type = new_reservation_type LIMIT 1));\n" +
-    "ELSE\n" +
-    "SET result = 1;\n" +
-    "END IF;\n" +
+    "SELECT *, reservation_types.reservation_type FROM sites\n" +
+    "JOIN reservation_types ON reservation_types.reservation_type_id = sites.reservation_type_id\n" +
+    "WHERE sites.site_number = new_site_number\n" +
+    "LIMIT 1;\n" +
     "END;";
   con.query(sql, function (err, results, fields) {
     if (err) {
       console.log(err.message);
       throw err;
     } else {
-      console.log("database.js: procedure create_site created if it didn't exist");
+      console.log("database.js: procedure get_reservation created if it didn't exist");
     }
   });
+
 
   sql =
     "CREATE PROCEDURE IF NOT EXISTS `add_manage_site_log`(\n" +
