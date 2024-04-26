@@ -89,7 +89,7 @@
     function showRVSizeInput() {
       var type = document.getElementById("type");
       var maxSizeInput = document.getElementById("maxSizeInput");
-      if (type.value === "RVParking" || type.value === "DryCamping") {
+      if (type.value === "RV Parking" || type.value === "Dry Camping") {
         maxSizeInput.style.display = "";
       } else {
         maxSizeInput.style.display = "none";
@@ -108,9 +108,19 @@
       var isValid = true;
 
       // Validate RV Size
+      var siteNumber = document.getElementById("siteNumber").value;
+      var siteNumberError = document.getElementById("siteNumberError");
+      if (!isValidSiteNumber(siteNumber)) {
+        siteNumberError.textContent = "Please enter a valid Site Number (Integer).";
+        isValid = false;
+      } else {
+        siteNumberError.textContent = "";
+      }
+
+      // Validate RV Size
       var maxSize = document.getElementById("maxSize").value;
       var maxSizeError = document.getElementById("maxSizeError");
-      if (!isValidRVSize(maxSize) && (type === "DryCamping" || type === "RVParking")) {
+      if (!isValidRVSize(maxSize) && (type === "Dry Camping" || type === "RV Parking")) {
         maxSizeError.textContent = "Please enter a valid RV Max Size (Integer or decimal).";
         isValid = false;
       } else {
@@ -130,9 +140,14 @@
       return isValid;
     }
 
-    function isValidRVSize(rvSize) {
+    function isValidSiteNumber(siteNumber) {
+      // Allow digits only
+      return /^\d+$/.test(siteNumber);
+    }
+
+    function isValidRVSize(maxSize) {
       // Allow digits or decimal
-      return /^\d+(\.\d+)?$/.test(rvSize);
+      return /^\d+(\.\d+)?$/.test(maxSize);
     }
 
     function isValidPrice(price) {
@@ -197,16 +212,17 @@
                   <div id="siteNumberInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-hash text-white"></i></span>
                     <input type="text" class="form-control" id="siteNumber" name="siteNumber" placeholder="Site Number">
-                    <p id="rvSizeError" class="text-danger" style="height:25px"></p>
+                    <p id="siteNumberError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
                     <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
-                      <option value="RVParking" <%=(formData && formData.type==='RVParking' ) ? 'selected' : '' %>>RV
+                      <option value="RV Parking" <%=(formData && formData.type==='RV Parking' ) ? 'selected' : '' %>>RV
                         Parking</option>
                       <option value="Tenting" <%=(formData && formData.type==='Tenting' ) ? 'selected' : '' %>>Tenting
                       </option>
-                      <option value="DryCamping" <%=(formData && formData.type==='DryCamping' ) ? 'selected' : '' %>>Dry
+                      <option value="Dry Camping" <%=(formData && formData.type==='Dry Camping' ) ? 'selected' : '' %>
+                        >Dry
                         Camping</option>
                       <option value="Storage" <%=(formData && formData.type==='Storage' ) ? 'selected' : '' %>>Storage
                       </option>
@@ -215,13 +231,13 @@
                   <div id="maxSizeInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-truck-front-fill text-white"></i></span>
                     <input type="text" class="form-control" id="maxSize" name="maxSize" placeholder="Max RV Size (ft)"
-                      required value="<%= formData ? formData.maxSize : '' %>">
+                      value="<%= formData ? formData.maxSize : '' %>">
                     <p id="maxSizeError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div id="priceInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
                     <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
-                      placeholder="Price Per Night" required value="<%= formData ? formData.pricePerNight : '' %>">
+                      placeholder="Price Per Night" value="<%= formData ? formData.pricePerNight : '' %>">
                     <p id="priceError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div class="input-group mb-3">

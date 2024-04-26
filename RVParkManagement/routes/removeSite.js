@@ -7,6 +7,7 @@ var dbCon = require('../lib/database');
 router.get('/', function (req, res, next) {
   console.log("removeSite.js: GET");
   const siteNumber = req.query.siteNumber;
+  const message = req.query.message ? req.query.message : '';
 
   sql = "CALL get_site(?);";
   dbCon.query(sql, [siteNumber], function (err, manageSite) {
@@ -17,11 +18,11 @@ router.get('/', function (req, res, next) {
     if (manageSite.length > 0) {
       const site = manageSite[0];
       console.log("removeSite.js: this is the site: ", site);
-      res.render('removeSite', { site: site });
+      res.render('removeSite', { site: site, message: message, isPost: false });
     }
     else {
       console.log("removeSite.js: there is not a site with this Site Number.");
-      res.render('removeSite', { site: [] });
+      res.render('removeSite', { site: [], isPost: false });
     }
   });
 
@@ -53,32 +54,41 @@ router.post('/', function (req, res, next) {
 
 
   if (siteStatus === "Active") {
-    sql = "CALL remove_site(?, ?);";
-    dbCon.query(sql, [siteNumber, 'Closed'], function (err, result) {
+    sql = "CALL remove_site(?, ?, ?, @result); select @result;";
+    dbCon.query(sql, [req.session.username, siteNumber, 'Closed'], function (err, rows) {
       if (err) {
-        console.log("removeSite.js: procedure remove_site failed");
+        console.log("removeSite.js: procedure remove_site failed (active)");
         throw err;
       }
+      console.log("Procedure Successfully Ran - Result: " + rows[1][0]['@result']);
 
-      if (result.length > 0) {
+      if (rows[1][0]['@result'] ==0)  {
         console.log("removeSite.js: POST - site was removed successfully");
+        res.redirect('/removeSite?siteNumber=' + siteNumber);
       }
-
-      res.redirect('/removeSite?siteNumber=' + siteNumber);
+      else if(rows[1][0]['@result'] == 1){
+        console.log("removeSite.js: POST - site could not be removed");
+        res.redirect('/removeSite?siteNumber=' + siteNumber + "&message=Site " + siteNumber + " could Not be changed to 'Closed' due to open Reservations on this site.");
+      }
     });
   } else if (siteStatus === "Closed") {
-    sql = "CALL remove_site(?, ?);";
-    dbCon.query(sql, [siteNumber, 'Active'], function (err, result) {
+    sql = "CALL remove_site(?, ?, ?, @result); select @result;";
+    dbCon.query(sql, [req.session.username, siteNumber, 'Active'], function (err, rows) {
       if (err) {
-        console.log("removeSite.js: procedure remove_site failed");
+        console.log("removeSite.js: procedure remove_site failed (closed)");
         throw err;
       }
 
-      if (result.length > 0) {
-        console.log("removeSite.js: POST - site was removed successfully");
-      }
+      console.log("Procedure Successfully Ran - Result: " + rows[1][0]['@result']);
 
-      res.redirect('/removeSite?siteNumber=' + siteNumber);
+      if (rows[1][0]['@result'] == 0) {
+        console.log("removeSite.js: POST - site was opened successfully");
+        res.redirect('/removeSite?siteNumber=' + siteNumber);
+      }
+      else if(rows[1][0]['@result'] == 1){
+        console.log("removeSite.js: POST - site could not be removed");
+        res.redirect('/removeSite?siteNumber=' + siteNumber + "&message=Site " + siteNumber + " could Not be changed to 'Active', unknown error");
+      }
     });
   }
 });
