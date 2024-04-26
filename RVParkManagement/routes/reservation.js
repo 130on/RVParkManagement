@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var app = express();
+
+app.use(express.static('public'));
 
 var dbCon = require('../lib/database');
 

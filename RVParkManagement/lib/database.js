@@ -382,7 +382,8 @@ function createStoredProcedures() {
     "INNER JOIN reservation_status ON reservations.reservation_status_id = reservation_status.reservation_status_id\n" +
     "INNER JOIN reservation_types ON reservations.reservation_type_id = reservation_types.reservation_type_id\n" +
     "INNER JOIN sites ON reservations.site_id = sites.site_id\n" +
-    "WHERE reservations.user_id = userId AND (new_reservation_status = '' OR reservation_status.status = new_reservation_status);\n" +
+    "WHERE reservations.user_id = userId AND (new_reservation_status = '' OR reservation_status.status = new_reservation_status)\n" +
+    "ORDER BY reservations.from_date, reservations.to_date, sites.site_number;\n" +
     "END;";
 
   con.query(sql, function (err, results, fields) {
@@ -809,7 +810,8 @@ function createStoredProcedures() {
   sql = "CREATE PROCEDURE IF NOT EXISTS `get_users`()\n" +
     "BEGIN\n" +
     "SELECT username \n" +
-    "FROM users;\n" +
+    "FROM users\n" +
+    "ORDER BY username;\n" +
     "END;";
 
   con.query(sql, function (err, results, fields) {
