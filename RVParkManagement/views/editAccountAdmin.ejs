@@ -77,10 +77,10 @@
             // Reset the page based on the selected type
             var type = document.getElementById("type").value;
             if (type === "Tenting" || type === "Storage") {
-              // If the type is "Tenting", hide the RV size input and clear its value and error message
-              document.getElementById("rvSizeInput").style.display = "none";
-              document.getElementById("rvSize").value = "";
-              document.getElementById("rvSizeError").textContent = "";
+                // If the type is "Tenting", hide the RV size input and clear its value and error message
+                document.getElementById("rvSizeInput").style.display = "none";
+                document.getElementById("rvSize").value = "";
+                document.getElementById("rvSizeError").textContent = "";
             }
         }
     </script>
@@ -219,27 +219,32 @@
                                                                                             value="<%= result[0][0].username %>">
 
                                                                                     </div>
-                                                                                    <div class="form-group">
-                                                                                        <label>Change User Role</label>
-                                                                                        <!-- <input class="form-control"
+                                                                                    <% if
+                                                                                        (adminResults[0].user_role_id===2)
+                                                                                        { %>
+                                                                                        <div class="form-group">
+                                                                                            <label>Change User
+                                                                                                Role</label>
+                                                                                            <!-- <input class="form-control"
                                                                                                 type="text"
                                                                                                 name="usertype" value="<%= result[0][0].user_type
                                                                                                 %>"> -->
-                                                                                        <select name="usertype"
-                                                                                            id="usertype"
-                                                                                            class="form-control">
-                                                                                            <option value=1>
-                                                                                                customer
-                                                                                            </option>
-                                                                                            <option value=2>
-                                                                                                admin</option>
-                                                                                            <option value=3>
-                                                                                                employee</option>
-                                                                                            <input type="hidden"
-                                                                                                name="placeholderUserType"
-                                                                                                value="<%= result[0][0].user_type %>">
-                                                                                        </select>
-                                                                                    </div>
+                                                                                            <select name="usertype"
+                                                                                                id="usertype"
+                                                                                                class="form-control">
+                                                                                                <option value=1>
+                                                                                                    customer
+                                                                                                </option>
+                                                                                                <option value=2>
+                                                                                                    admin</option>
+                                                                                                <option value=3>
+                                                                                                    employee</option>
+                                                                                                <input type="hidden"
+                                                                                                    name="placeholderUserType"
+                                                                                                    value="<%= result[0][0].user_type %>">
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <% } %>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
@@ -343,65 +348,68 @@
 
                                                                 </form>
                                                                 <!-- <p>USER TYPE -> <%= adminResults[0].user_role_id %></p> -->
-                                                                <form method="post" 
-                                                                    onsubmit="return checkPassword(event)">
-                                                                    <div class="row">
-                                                                        <div class="col-12 col-sm-6 mb-3">
-                                                                            <div class="mb-2"><b>Change
-                                                                                    Password</b>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    <div class="form-group">
-                                                                                        <label>New
-                                                                                            Password</label>
-                                                                                        <input class="form-control"
-                                                                                            type="password"
-                                                                                            id="password1"
-                                                                                            placeholder="••••••">
+                                                                <% if (adminResults[0].user_role_id!=3) { %>
+                                                                    <form method="post"
+                                                                        onsubmit="return checkPassword(event)">
+                                                                        <div class="row">
+                                                                            <div class="col-12 col-sm-6 mb-3">
+                                                                                <div class="mb-2"><b>Change
+                                                                                        Password</b>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="col">
+                                                                                        <div class="form-group">
+                                                                                            <label>New
+                                                                                                Password</label>
+                                                                                            <input class="form-control"
+                                                                                                type="password"
+                                                                                                id="password1"
+                                                                                                placeholder="••••••">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="col">
+                                                                                        <div class="form-group">
+                                                                                            <label>Confirm <span
+                                                                                                    class="d-none d-xl-inline">Password</span></label>
+                                                                                            <input class="form-control"
+                                                                                                type="password"
+                                                                                                id="password2"
+                                                                                                placeholder="••••••">
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <p id="message"
+                                                                                                class="text-danger"
+                                                                                                style="height:25px">
+                                                                                                <%- locals.message %>
+                                                                                            </p>
+                                                                                        </div>
+                                                                                        <input type="hidden"
+                                                                                            name="formType"
+                                                                                            value="passwordForm">
+
+                                                                                        <input type="hidden"
+                                                                                            name="usernameToEdit"
+                                                                                            value="<%= result[0][0].username %>">
+
+                                                                                        <input type="hidden" id="hash"
+                                                                                            name="hash">
+                                                                                        <input type="hidden" id="salt"
+                                                                                            name="salt">
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    <div class="form-group">
-                                                                                        <label>Confirm <span
-                                                                                                class="d-none d-xl-inline">Password</span></label>
-                                                                                        <input class="form-control"
-                                                                                            type="password"
-                                                                                            id="password2"
-                                                                                            placeholder="••••••">
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        <p id="message"
-                                                                                            class="text-danger"
-                                                                                            style="height:25px">
-                                                                                            <%- locals.message %>
-                                                                                        </p>
-                                                                                    </div>
-                                                                                    <input type="hidden" name="formType"
-                                                                                        value="passwordForm">
-
-                                                                                    <input type="hidden"
-                                                                                        name="usernameToEdit"
-                                                                                        value="<%= result[0][0].username %>">
-
-                                                                                    <input type="hidden" id="hash"
-                                                                                        name="hash">
-                                                                                    <input type="hidden" id="salt"
-                                                                                        name="salt">
-                                                                                </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col d-flex justify-content-end">
+                                                                                <button class="btn btn-primary"
+                                                                                    type="submit">Save
+                                                                                    Password Changes</button>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col d-flex justify-content-end">
-                                                                            <button class="btn btn-primary"
-                                                                                type="submit">Save
-                                                                                Password Changes</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </form>
+                                                                    </form>
+                                                                    <% } %>
                                                             </div>
                                                             <!-- </form> -->
                                                         </div>

@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     console.log("This is the userName: ", userName);
 
     var userId;
-    var userRoldId;
+    var userRoleId;
     let sql = "SELECT user_id\n" +
         "FROM users\n" +
         "WHERE username = '" + userName + "';\n";
@@ -34,18 +34,17 @@ router.get('/', function (req, res, next) {
                 }
                 if (result.length > 0) {
                     console.log("home.js: this is the result of Call to get_user_type_id: ", result);
-                    userRoldId = parseInt(result[0][0].user_role_id);
-                    console.log("home.js: This is the user_role_id: ", userRoldId);
+                    userRoleId = parseInt(result[0][0].user_role_id);
+                    req.session.userRoleId = userRoleId;
+                    console.log("home.js: This is the user_role_id: ", userRoleId);
 
-                    if (userRoldId == 2) {
-                        res.redirect("/adminView");
-                    }
-                    else if (userRoldId == 3) {
-                        res.redirect('/employeeView');
-                    }
-                    else {
+                    if (userRoleId == 1) {
                         res.render("home");
                     }
+                    else {
+                        res.redirect("/adminView");
+                    }
+
                 }
                 else {
                     console.log("Could not find user_role_id for userId: ", userId);

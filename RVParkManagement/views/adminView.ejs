@@ -84,6 +84,11 @@
             bottom: 0;
             width: 100%;
         }
+
+        /* changes the color of the dropdown box if user hasn't choose a username*/
+        .select-error {
+            border-color: red;
+        }
     </style>
 
 
@@ -124,7 +129,8 @@
         </div>
     </div> -->
     <header>
-        <h1>Welcome Admin!</h1>
+        <h1>Welcome <%= locals.username %>
+        </h1>
     </header>
     <main>
 
@@ -132,7 +138,7 @@
             <h2>Modify Reservation</h2>
             <p>Make changes to existing reservations.</p>
             <a id="reservationLink" href="#">Modify Reservation</a>
-            <input type="text" id ="reservationId" name="reservationId" placeholder="Reservation ID">
+            <input type="text" id="reservationId" name="reservationId" placeholder="Reservation ID">
 
         </div>
         <div class=" card">
@@ -140,7 +146,7 @@
             <p>Update Customer account information.</p>
             <!-- <input type="text" name="userToEdit" placeholder="Username to change"> -->
             <select name="userToEdit" id="userToEdit" class="form-control" required>
-                <option value="" disabled selected>User Name to Change</option>
+                <option value="" disabled selected placeholder="">User Name to Change</option>
                 <% if (users.length> 0) { %>
                     <% users[0].forEach(function(user) { %>
                         <option value="<%= user.username %>">
@@ -153,13 +159,21 @@
         </div>
 
         <script>
-            
+
 
             document.getElementById('editAccountLink').addEventListener('click', function () {
                 console.log("Edit account link clicked");
                 var userToEdit = document.getElementById('userToEdit').value;
-                var url = "/editAccountAdmin?userToEdit=" + userToEdit;
-                window.location.href = url;
+                var selectBox = document.getElementById('userToEdit');
+
+                if (userToEdit != "") {
+                    selectBox.classList.remove('select-error');
+                    var url = "/editAccountAdmin?userToEdit=" + userToEdit;
+                    window.location.href = url;
+                }
+                else {
+                    selectBox.classList.add('select-error');
+                }
             });
 
             document.getElementById('reservationLink').addEventListener('click', function () {
