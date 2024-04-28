@@ -27,7 +27,7 @@
       var type = document.getElementById("type").value;
       var rvSize = document.getElementById("rvSize");
       // Clear rvSize if Tenting or Storage is selected
-      if (type === "Tenting" || type === "Storage") {
+      if (type === "Tenting" || type === "Storage" || type === "Pop Up Trailer") {
         rvSize.value = '';
       }
       var isValid = true;
@@ -97,7 +97,7 @@
     function onPageLoad() {
       // Reset the page based on the selected type
       var type = document.getElementById("type").value;
-      if (type === "Tenting" || type === "Storage") {
+      if (type === "Tenting" || type === "Storage" || type === "Pop Up Trailer") {
         // If the type is "Tenting", hide the RV size input and clear its value and error message
         document.getElementById("rvSizeInput").style.display = "none";
         document.getElementById("rvSize").value = "";
@@ -128,6 +128,7 @@
                       <option value="Tenting">Tenting</option>
                       <option value="Dry Camping">Dry Camping</option>
                       <option value="Storage">Storage</option>
+                      <option value="Pop Up Trailer">Pop Up Trailer</option>
                     </select>
                   </div>
                   <div id="rvSizeInput" class="input-group mb-3">

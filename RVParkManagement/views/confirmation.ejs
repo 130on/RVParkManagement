@@ -32,7 +32,7 @@
                             <p>Type of Stay: <%= reservationConfirmation[0].reservation_type %>
                             </p>
                             <% if (reservationConfirmation[0].reservation_type !=='Tenting' &&
-                                reservationConfirmation[0].reservation_type !=='Storage' ) { %>
+                                reservationConfirmation[0].reservation_type !=='Storage' && reservationConfirmation[0].reservation_type !== 'Pop Up Trailer') { %>
                                 <p>Size of RV: <%= reservationConfirmation[0].rv_size %> ft</p>
                                 <% } %>
                                     <p>Site in the RV Park: Site <%= reservationConfirmation[0].site_number %>

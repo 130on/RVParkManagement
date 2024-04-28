@@ -789,6 +789,25 @@ function createStoredProcedures() {
     }
   });
 
+  sql = "CREATE PROCEDURE IF NOT EXISTS `complete_reservation`(\n" +
+  "IN complete_reservation_id INT\n" +
+  ")\n" +
+  "BEGIN\n" +
+  "UPDATE reservations \n" +
+  "SET reservation_status_id = (SELECT reservation_status_id FROM reservation_status WHERE status = 'Completed')\n" +
+  "WHERE reservation_id = complete_reservation_id; \n" +
+  "END;";
+
+con.query(sql, function (err, results, fields) {
+  if (err) {
+    console.log(err.message);
+    throw err;
+  } else {
+    console.log("database.js: procedure cancel_reservation created if it didn't exist");
+  }
+});
+
+
   sql = "CREATE PROCEDURE IF NOT EXISTS `refund_payment`(\n" +
     "IN new_reservation_id INT\n" +
     ")\n" +
@@ -1168,6 +1187,25 @@ function addDummyData() {
     console.log("database.js: Added 'Tenting' to reservation_types");
   });
 
+  sql = "CALL insert_reservation_type('Storage')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Storage' to reservation_types");
+  });
+
+  sql = "CALL insert_reservation_type('Pop Up Trailer')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Pop Up Trailer' to reservation_types");
+  });
+
+
   sql = "CALL register_user('admin', 'admin', 'admin', 'admin@gmail.com', '8017753250', '757e31954b06c8c0e3b2f026d507b78a7a0f9d76e545cb70f631b0e1004f086b',\n" +
     "'0ce81db045e50d61', '5622 Park Ln. Bldg. #564', 'Hill AFB', 'UT', 84056, 'DOD Authorized Civilian',\n" +
     "'other', 'none', 'admin', @result)";
@@ -1178,35 +1216,6 @@ function addDummyData() {
     }
     console.log("database.js: Added admin account to users");
   });
-
-
-  sql = "CALL create_site('admin', 1, 39, 17, 'Active', 'RV Parking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site('admin', 3, 46, 19, 'Active', 'RV Parking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site('admin', 2, NULL, 10, 'Active', 'Tenting', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
 }
 
 module.exports = con;
