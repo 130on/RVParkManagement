@@ -233,6 +233,21 @@ function createTables() {
   });
 
 
+  sql = "CREATE TABLE IF NOT EXISTS holiday_dates (\n" +
+    "holiday_date_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "holiday_date DATE NOT NULL, \n" +
+    "holiday_description VARCHAR(255), \n" +
+    "PRIMARY KEY (holiday_date_id)\n" +
+    ")";
+  con.execute(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: table holiday_dates created if it didn't exist");
+    }
+  });
+
 
 
 }
@@ -617,13 +632,13 @@ function createStoredProcedures() {
     "IF future_reservations = 0 THEN\n" +
     "UPDATE sites\n" +
     "SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
-    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +    "WHERE site_id = siteId;\n\n" +
+    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" + "WHERE site_id = siteId;\n\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, 's status changed to ', new_site_status));\n" +
     "IF new_site_number != old_site_number THEN\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number ', old_site_number, ' Changed from ', old_site_number, ' -> ', new_site_number));\n" +
-    "END IF;"+
+    "END IF;" +
     "ELSE\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, ' could not be closed due to active reservations'));\n" +
@@ -641,7 +656,7 @@ function createStoredProcedures() {
     "IF new_site_number = old_site_number THEN\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', new_site_number, 's properties were changed'));\n" +
-    "ELSE\n"+
+    "ELSE\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number Changed from ', old_site_number, ' -> ', new_site_number, ', site properties were changed'));\n" +
     "END IF;\n" +
@@ -737,9 +752,13 @@ function createStoredProcedures() {
     "    AND reservations.to_date >= new_from_date\n" +
     "    AND reservation_status.status = 'Active'\n" +
     ")\n" +
+    "AND NOT EXISTS (\n" +
+    "    SELECT 1\n" +
+    "    FROM holiday_dates\n" +
+    "    WHERE holiday_dates.holiday_date BETWEEN new_from_date AND new_to_date\n" +
+    ")\n" +
     "ORDER BY sites.site_number;\n" +
     "END;";
-
 
 
   con.query(sql, function (err, results, fields) {
@@ -803,7 +822,7 @@ function createStoredProcedures() {
       console.log(err.message);
       throw err;
     } else {
-      console.log("database.js: procedure cancel_reservation created if it didn't exist");
+      console.log("database.js: procedure get_usertype_id created if it didn't exist");
     }
   });
 
@@ -997,6 +1016,61 @@ function createStoredProcedures() {
       throw err;
     } else {
       console.log("database.js: procedure edit_user_details created if it didn't exist");
+    }
+  });
+
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_holiday_date`(\n" +
+    "    IN new_holiday_date DATE,\n" +
+    "    IN new_holiday_description VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "    INSERT INTO holiday_dates(holiday_date, holiday_description)\n" +
+    "    SELECT new_holiday_date, new_holiday_description\n" +
+    "    FROM DUAL\n" +
+    "    WHERE NOT EXISTS (\n" +
+    "        SELECT *\n" +
+    "        FROM holiday_dates\n" +
+    "        WHERE holiday_dates.holiday_date = new_holiday_date\n" +
+    "        LIMIT 1\n" +
+    "    );\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure insert_holiday_date created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `delete_holiday_date`(\n" +
+    "    IN new_holiday_date_id INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "    DELETE FROM holiday_dates WHERE holiday_date_id = new_holiday_date_id;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure delete_holiday_date created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_holiday_dates`()\n" +
+    "BEGIN\n" +
+    "SELECT * \n" +
+    "FROM holiday_dates\n" +
+    "ORDER BY holiday_date;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_holiday_dates created if it didn't exist");
     }
   });
 
