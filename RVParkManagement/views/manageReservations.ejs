@@ -29,7 +29,8 @@
 
     <script>
         function goBack() {
-            window.location.href = "/home";        }
+            window.location.href = "/home";
+        }
     </script>
 </head>
 
@@ -92,12 +93,14 @@
                                     <% result.forEach(function(reservation) { %>
                                         <div class="manage-reservations">
                                             <div class="reservation-item">
-                                                <p>Reservation ID: <%= String(reservation.reservation_id).padStart(7, '0' ) %>
+                                                <p>Reservation ID: <%=
+                                                        String(reservation.reservation_id).padStart(7, '0' ) %>
                                                 </p>
                                                 <p>Type of Reservation: <%= reservation.reservation_type %>
                                                 </p>
                                                 <% if (reservation.reservation_type !=='Tenting' &&
-                                                    reservation.reservation_type !=='Storage' ) { %>
+                                                    reservation.reservation_type !=='Storage' &&
+                                                    reservation.reservation_type !=='Pop Up Trailer' ) { %>
                                                     <p>Size of RV: <%= reservation.rv_size %> ft</p>
                                                     <% } %>
                                                         <p>Site in the RV Park: <%= reservation.site_number %>
@@ -105,18 +108,19 @@
                                                         <p>Date Reservation was made: <%= reservation.reservation_date
                                                                 %>
                                                         </p>
-                                                        <p>Length of Reservation: <%= reservation.from_date.toDateString()
-                                                            %> - <%= reservation.to_date.toDateString() %>
-                                                        <p>Status of Reservation: <%= reservation.status %>
-                                                        </p>
-                                                        <form action="/manageReservations" method="post">
-                                                            <input type="hidden" name="reservation_id"
-                                                                value="<%= reservation.reservation_id %>"
-                                                                id="reservation_id">
-                                                            <button class="btn btn-danger btn-sm mt-3"
-                                                                type="submit">Cancel</button>
+                                                        <p>Length of Reservation: <%=
+                                                                reservation.from_date.toDateString() %> - <%=
+                                                                    reservation.to_date.toDateString() %>
+                                                                    <p>Status of Reservation: <%= reservation.status %>
+                                                                    </p>
+                                                                    <form action="/manageReservations" method="post">
+                                                                        <input type="hidden" name="reservation_id"
+                                                                            value="<%= reservation.reservation_id %>"
+                                                                            id="reservation_id">
+                                                                        <button class="btn btn-danger btn-sm mt-3"
+                                                                            type="submit">Cancel</button>
 
-                                                        </form>
+                                                                    </form>
                                             </div>
                                         </div>
 

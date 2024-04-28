@@ -38,9 +38,9 @@ function formatDate(date) {
 
 const todaysDate = formatDate(new Date());
 
-/* POST page*/
-router.post('/', function (req, res, next) {
-  console.log("adminManageReservations.js: POST");
+/* POST page (CANCEL)*/
+router.post('/cancel', function (req, res, next) {
+  console.log("adminManageReservations.js: POST (cancel)");
 
   //run cancel reservation here
   var reservation_id = req.body.reservation_id;
@@ -98,6 +98,29 @@ router.post('/', function (req, res, next) {
         });
       });
     });
+  });
+});
+
+/* POST page (COMPLETE)*/
+router.post('/complete', function (req, res, next) {
+  console.log("adminManageReservations.js: POST (complete)");
+
+  //run cancel reservation here
+  var reservation_id = req.body.reservation_id;
+  console.log("adminManageReservations.js: POST - This is the reservationID: ", reservation_id);
+
+  let sql = "CALL complete_reservation(?);";
+  dbCon.query(sql, [reservation_id], function (err, result) {
+    if (err) {
+      console.log("adminManageReservations.js: procedure complete_reservation failed");
+      throw err;
+    }
+
+    if (result.length > 0) {
+      console.log("adminManageReservations.js: POST - reservation was completed successfully");
+    }
+
+    res.redirect('/adminManageReservations?manageReservationID=' + reservation_id);
   });
 });
 

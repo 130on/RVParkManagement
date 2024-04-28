@@ -118,56 +118,90 @@
 
 
     <header>
-        <h1>Holidays Schedule <%= locals.username %>
+        <h1>Holiday Schedule
         </h1>
     </header>
     <main>
-
-        <div>
-            <table class="table table-bordered m-5">
-                <div>
-                    <%#if (result && result.length> 0) { %>
-                        <h1 class="m-3">Savings Account <%#= result[0].accountNumber %>
-                        </h1>
-                        <%# } else { %>
-                            <h1 class="m-3">Savings Account - No Transactions to Display</h1>
-                            <%# } %>
+        <div class="container">
+            <form id="addDateForm" class="form-inline mb-3" method="post">
+                <!-- Input fields to add new holiday date -->
+                <div class="form-group mr-2">
+                    <input type="text" class="form-control" id="holidayDate" name="holidayDate"
+                        placeholder="Enter Date (MM/DD/YYYY)" onfocus="(this.type='date')"
+                        onblur="if(this.value=='') this.type='text'" required>
                 </div>
+                <div class="form-group mr-2">
+                    <input type="text" class="form-control" id="holidayDescription" name="holidayDescription"
+                        placeholder="Enter Description">
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <!-- Table to display holiday dates -->
+            <table class="table table-bordered">
                 <thead class="thead-light">
                     <tr>
                         <th scope="col">Date</th>
                         <th scope="col">Description</th>
-                        <th scope="col">Memo</th>
-                        <th scope="col">Ammount</th>
-                        <th scope="col">Balance</th>
+                        <th scope="col">Action</th> <!-- Added for delete button -->
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- <%# for(var i=0; i < result.length; i++) { %>
+                    <% function formatDate(dateString) {
+                        // Create a new Date object from the input date string
+                        const date = new Date(dateString);
+                        
+                        // Ensure the date is valid
+                        if (isNaN(date.getTime())) {
+                            return "Invalid Date";
+                        }
+                        
+                        // Define months array
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        
+                        // Get the month, day, and year
+                        const month = months[date.getMonth()];
+                        const day = date.getDate();
+                        const year = date.getFullYear();
+                        
+                        // Determine the day suffix
+                        let daySuffix = 'th';
+                        if (day === 1 || day === 21 || day === 31) {
+                            daySuffix = 'st';
+                        } else if (day === 2 || day === 22) {
+                            daySuffix = 'nd';
+                        } else if (day === 3 || day === 23) {
+                            daySuffix = 'rd';
+                        }
+                        
+                        // Return the formatted date string
+                        return month + ' ' + day + daySuffix + ', ' + year; 
+                    }    
+                     %>
+                    <!-- Iterate over holiday dates and display each row -->
+                    <% holidayDates.forEach(function(holiday) { %>
                         <tr>
                             <td>
-                                <%#= result[i].transactionDate %>
+                                <%= formatDate(holiday.holiday_date) %>
                             </td>
                             <td>
-                                <%#= result[i].transactionType %>
+                                <%= holiday.holiday_description %>
                             </td>
                             <td>
-                                <%#= result[i].memo %>
-                            </td>
-                            <td>
-                                <%#= result[i].transactionAmount %>
-                            </td>
-                            <td>
-                                <%#= result[i].updatedBalance %>
+                                <!-- Form to submit holiday date id for deletion -->
+                                <form method="post" action="/holidayDates/delete">
+                                    <input type="hidden" name="holidayDateId" value="<%= holiday.holiday_date_id %>">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
                             </td>
                         </tr>
-
-                        <%# } %> -->
+                        <% }); %>
                 </tbody>
             </table>
         </div>
-
     </main>
+
+
     <footer>
         <p>&copy; 2024 RV Park Management</p>
     </footer>

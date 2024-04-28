@@ -89,7 +89,7 @@
                                             <p>Type of Reservation: <%= reservation[0].reservation_type %>
                                             </p>
                                             <% if (reservation[0].reservation_type !=='Tenting' &&
-                                                reservation[0].reservation_type !=='Storage' ) { %>
+                                                reservation[0].reservation_type !=='Storage' && reservation[0].reservation_type !== 'Pop Up Trailer') { %>
                                                 <p>Size of RV: <%= reservation[0].rv_size %> ft</p>
                                                 <% } %>
                                                     <p>Site in the RV Park: <%= reservation[0].site_number %>
@@ -102,8 +102,17 @@
                                                             <%= reservation[0].to_date.toDateString() %>
                                                                 <p>Status of Reservation: <%= reservation[0].status %>
                                                                 </p>
-                                                                <% if (reservation[0].status !=='Canceled' ) { %>
-                                                                    <form action="/adminManageReservations"
+                                                                <% if (reservation[0].status ==='Active'  ) { %>
+                                                                    <form action="/adminManageReservations/complete"
+                                                                        method="post">
+                                                                        <input type="hidden" name="reservation_id"
+                                                                            value="<%= manageReservationID %>"
+                                                                            id="reservation_id">
+                                                                        <button class="btn btn-primary btn-sm mt-3"
+                                                                            type="submit">Complete</button>
+                                                                    </form>
+
+                                                                    <form action="/adminManageReservations/cancel"
                                                                         method="post">
                                                                         <input type="hidden" name="reservation_id"
                                                                             value="<%= manageReservationID %>"
