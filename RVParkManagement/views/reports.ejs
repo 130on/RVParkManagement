@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports Page</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/css/allViews.css" />
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
@@ -91,7 +93,12 @@
         }
     </style>
 
-
+    <script>
+        // Function to handle back button click
+        function goBack() {
+            window.location.href = '/home'; // Navigate back
+        }
+    </script>
 
 </head>
 
@@ -119,73 +126,143 @@
         </form>
     </nav>
 
+    <% if (reportDate !=null) { %>
+        <header>
+            <h1>Report for Date <%= reportDate %>
+            </h1>
+        </header>
+        <main>
 
-    <header>
-        <h1>Report for <%= locals.username %>
-        </h1>
-    </header>
-    <main>
-
-        <div>
-            <table class="table table-bordered m-5">
-                <div>
-                    <%#if (result && result.length> 0) { %>
-                        <h1 class="m-3">Savings Account <%#= result[0].accountNumber %>
-                        </h1>
-                        <%# } else { %>
-                            <h1 class="m-3">Savings Account - No Transactions to Display</h1>
-                            <%# } %>
-                </div>
-                <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Memo</th>
-                        <th scope="col">Ammount</th>
-                        <th scope="col">Balance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- <%# for(var i=0; i < result.length; i++) { %>
+            <div>
+                <table class="table table-bordered m-5">
+                    <div>
+                        <%if (report.length> 0) { %>
+                            <h1 class="m-3 text-center">Reservations Log
+                            </h1>
+                            <% } else { %>
+                                <h1 class="m-3">No Reservations to Display for the Selected Date</h1>
+                                <% } %>
+                                    <button class="back-button" onclick="goBack()">
+                                        < Back</button>
+                    </div>
+                    <thead class="thead-light text-center">
                         <tr>
-                            <td>
-                                <%#= result[i].transactionDate %>
-                            </td>
-                            <td>
-                                <%#= result[i].transactionType %>
-                            </td>
-                            <td>
-                                <%#= result[i].memo %>
-                            </td>
-                            <td>
-                                <%#= result[i].transactionAmount %>
-                            </td>
-                            <td>
-                                <%#= result[i].updatedBalance %>
-                            </td>
+                            <th scope="col">Reservation ID</th>
+                            <th scope="col">Reservation Type</th>
+                            <th scope="col">Site Number</th>
+                            <th scope="col">RV Size (ft.)</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i < report.length; i++) { %>
+                            <tr>
+                                <td>
+                                    <%= report[i].reservation_id %>
+                                </td>
+                                <td>
+                                    <%= report[i].reservation_type %>
+                                </td>
+                                <td>
+                                    <%= report[i].site_number %>
+                                </td>
+                                <td>
+                                    <%= report[i].rv_size %>
+                                </td>
+                            </tr>
 
-                        <%# } %> -->
-                </tbody>
-            </table>
-        </div>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <% } else { %>
+            <header>
+                <h1>Report for <%= reportName %>
+                </h1>
+            </header>
 
-    </main>
-    <footer>
-        <p>&copy; 2024 RV Park Management</p>
-    </footer>
+            <main>
+
+                <div>
+                    <table class="table table-bordered m-5">
+                        <div>
+                            <%if (report.length> 0) { %>
+                                <h1 class="m-3 text-center">Reservations Log
+                                </h1>
+                                <% } else { %>
+                                    <h1 class="m-3">No Reservations to Display for the Selected User Name</h1>
+                                    <% } %>
+                                        <button class="back-button" onclick="goBack()">
+                                            < Back</button>
+                        </div>
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Username</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Email Address</th>
+                                <th scope="col">Phone Number</th>
+                                <th scope="col">Reservation ID</th>
+                                <th scope="col">Reservation Type</th>
+                                <th scope="col">Site Number</th>
+                                <th scope="col">RV Size (ft.)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(var i=0; i < report.length; i++) { %>
+                                <tr>
+                                    <td>
+                                        <%= report[i].username %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].first_name %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].last_name %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].email %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].phone_number %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].reservation_id %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].reservation_type %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].site_number %>
+                                    </td>
+                                    <td>
+                                        <%= report[i].rv_size %>
+                                    </td>
+                                </tr>
+
+                                <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+            <% } %>
+
+                <footer>
+                    <p>&copy; 2024 RV Park Management</p>
+                </footer>
 
 
-    <!-- Bootstrap scripts -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
+                <!-- Bootstrap scripts -->
+                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                    crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+                    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+                    crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+                    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+                    crossorigin="anonymous"></script>
 </body>
 
 </html>

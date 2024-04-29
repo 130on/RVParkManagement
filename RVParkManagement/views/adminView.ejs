@@ -137,8 +137,8 @@
         <div class="card">
             <h2>Modify Reservation</h2>
             <p>Make changes to existing reservations.</p>
-            <a id="reservationLink" href="#">Modify Reservation</a>
             <input type="text" id="reservationId" name="reservationId" placeholder="Reservation ID">
+            <a id="reservationLink" href="#">Modify Reservation</a>
 
         </div>
         <div class=" card">
@@ -158,32 +158,7 @@
             <a href="#" id="editAccountLink">Change Account Info</a>
         </div>
 
-        <script>
 
-
-            document.getElementById('editAccountLink').addEventListener('click', function () {
-                console.log("Edit account link clicked");
-                var userToEdit = document.getElementById('userToEdit').value;
-                var selectBox = document.getElementById('userToEdit');
-
-                if (userToEdit != "") {
-                    selectBox.classList.remove('select-error');
-                    var url = "/editAccountAdmin?userToEdit=" + userToEdit;
-                    window.location.href = url;
-                }
-                else {
-                    selectBox.classList.add('select-error');
-                }
-            });
-
-            document.getElementById('reservationLink').addEventListener('click', function () {
-                console.log("Manage Reservation link clicked");
-                var manageReservationID = document.getElementById('reservationId').value;
-                var url = "/adminManageReservations?manageReservationID=" + manageReservationID;
-                window.location.href = url;
-            });
-
-        </script>
 
         <!-- <div class="card">
             <h2>Change Customer Password</h2>
@@ -197,7 +172,23 @@
         <div class="card">
             <h2>Generate Report</h2>
             <p>Generate reports for insights and summary of customer reservation.</p>
-            <a href="/reports">Generate Report</a>
+            <select name="reports" id="reports" class="form-control">
+                <option value="" disabled selected placeholder="">Choose Report Type</option>
+                <option value="reportDay">By Date</option>
+                <option value="reportCust">By User Name</option>
+            </select>
+            <input type="date" id="reportsDate" name="selectedDate" class="form-control" style="display: none;">
+            <select name="userReport" id="userReport" class="form-control" style="display: none;" required>
+                <option value="" disabled selected placeholder="">User Name to Change</option>
+                <% if (users.length> 0) { %>
+                    <% users[0].forEach(function(user) { %>
+                        <option value="<%= user.username %>">
+                            <%= user.username %>
+                        </option>
+                        <% }); %>
+                            <% } %>
+            </select>
+            <a href="#" id="reportLink">Generate Report</a>
         </div>
 
         <div class="card">
@@ -213,6 +204,108 @@
         <p>&copy; 2024 RV Park Management</p>
     </footer>
 
+    <script>
+
+        document.getElementById('reservationLink').addEventListener('click', function () {
+            console.log("modify reservation link clicked");
+            var reservationToEdit = document.getElementById('reservationId').value;
+            var selectBox = document.getElementById('reservationId');
+
+            if (reservationToEdit != "") {
+                selectBox.classList.remove('select-error');
+                var url = "/adminManageReservations?manageReservationID=" + reservationToEdit;
+                window.location.href = url;
+            }
+            else {
+                selectBox.classList.add('select-error');
+            }
+        });
+
+        document.getElementById('editAccountLink').addEventListener('click', function () {
+            console.log("Edit account link clicked");
+            var userToEdit = document.getElementById('userToEdit').value;
+            var selectBox = document.getElementById('userToEdit');
+
+            if (userToEdit != "") {
+                selectBox.classList.remove('select-error');
+                var url = "/editAccountAdmin?userToEdit=" + userToEdit;
+                window.location.href = url;
+            }
+            else {
+                selectBox.classList.add('select-error');
+            }
+        });
+
+
+        document.getElementById('reportLink').addEventListener('click', function () {
+            console.log("Generate report link clicked");
+            var reportType = document.getElementById('reports').value;
+            var userDateInput = document.getElementById('reportsDate').value;
+            var userNameInput = document.getElementById('userReport').value
+
+            var selectBox = document.getElementById('reports');
+
+            if (reportType != "") {
+                if (userDateInput != "") {
+                    selectBox.classList.remove('select-error');
+                    document.getElementById('reportsDate').classList.remove('select-error');
+
+                    var url = "/reports?date=" + userDateInput;
+                    window.location.href = url;
+                }
+                else if (userNameInput != "") {
+                    selectBox.classList.remove('select-error');
+                    document.getElementById('userReport').classList.remove('select-error');
+                    var url = "/reports?userReport=" + userNameInput;
+                    window.location.href = url;
+                }
+                else {
+                    selectBox.classList.remove('select-error');
+                    document.getElementById('reportsDate').classList.add('select-error');
+                    document.getElementById('userReport').classList.add('select-error');
+                    var url = "#";
+                    window.location.href = url;
+                }
+            }
+            else {
+                selectBox.classList.add('select-error');
+                var url = "#";
+                window.location.href = url;
+            }
+        });
+
+        /*document.getElementById('reservationLink').addEventListener('click', function () {
+            console.log("Manage Reservation link clicked");
+            var manageReservationID = document.getElementById('reservationId').value;
+            var url = "/adminManageReservations?manageReservationID=" + manageReservationID;
+            window.location.href = url;
+        });*/
+
+
+        document.getElementById('reports').addEventListener('change', function () {
+            var selectedOption = document.getElementById('reports').value;
+            var dateInput = document.getElementById('reportsDate');
+
+            if (selectedOption === 'reportDay') {
+                dateInput.style.display = 'block'; // Show the date input field
+            } else {
+                dateInput.style.display = 'none'; // Hide the date input field
+            }
+        });
+
+        document.getElementById('reports').addEventListener('change', function () {
+            var selectedOption = document.getElementById('reports').value;
+            var userNameInput = document.getElementById('userReport');
+
+            if (selectedOption === 'reportCust') {
+                userNameInput.style.display = 'block'; // Show the date input field
+            } else {
+                userNameInput.style.display = 'none'; // Hide the date input field
+            }
+        });
+
+
+    </script>
 
     <!-- Bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

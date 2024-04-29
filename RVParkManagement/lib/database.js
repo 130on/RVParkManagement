@@ -617,13 +617,13 @@ function createStoredProcedures() {
     "IF future_reservations = 0 THEN\n" +
     "UPDATE sites\n" +
     "SET site_number = new_site_number, max_size = new_max_size, price_per_night = new_price_per_night, site_status = new_site_status,\n" +
-    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" +    "WHERE site_id = siteId;\n\n" +
+    "reservation_type_id = (SELECT reservation_type_id FROM reservation_types WHERE reservation_type = new_reservation_type LIMIT 1)\n" + "WHERE site_id = siteId;\n\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, 's status changed to ', new_site_status));\n" +
     "IF new_site_number != old_site_number THEN\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number ', old_site_number, ' Changed from ', old_site_number, ' -> ', new_site_number));\n" +
-    "END IF;"+
+    "END IF;" +
     "ELSE\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', old_site_number, ' could not be closed due to active reservations'));\n" +
@@ -641,7 +641,7 @@ function createStoredProcedures() {
     "IF new_site_number = old_site_number THEN\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site ', new_site_number, 's properties were changed'));\n" +
-    "ELSE\n"+
+    "ELSE\n" +
     "INSERT INTO managing_sites_log (user_id, site_id, log_date, note)\n" +
     "VALUES ((SELECT user_id FROM users WHERE username = new_username), siteId, CURDATE(), CONCAT('EditSite: Site Number Changed from ', old_site_number, ' -> ', new_site_number, ', site properties were changed'));\n" +
     "END IF;\n" +
@@ -842,70 +842,6 @@ function createStoredProcedures() {
     }
   });
 
-  // sql = "CREATE PROCEDURE IF NOT EXISTS `edit_user_details`(\n" +
-  //   "IN userId INT,\n" +
-  //   "IN newUserName VARCHAR(50),\n" +
-  //   "IN newFirstName VARCHAR(50),\n" +
-  //   "IN newLastName VARCHAR(50),\n" +
-  //   "IN newEmail VARCHAR(50),\n" +
-  //   "IN newPhoneNum VARCHAR(40),\n" +
-  //   "IN newStreetAddress VARCHAR(255),\n" +
-  //   "IN newCity VARCHAR(40),\n" +
-  //   "IN newState VARCHAR(40),\n" +
-  //   "IN newZipCode VARCHAR(10),\n" +
-  //   "IN newUserRoleId VARCHAR(10),\n" +
-  //   "OUT result INT\n" +
-  //   ")\n" +
-  //   "BEGIN\n" +
-  //   "DECLARE rowsAffected INT;\n" +
-  //   // "UPDATE users SET username = newUserName, first_name = newFirstName, last_name = newLastName, \n" +
-  //   // "email = newEmail, phone_number = newPhoneNum, street_address = newStreetAddress , city = newCity, state = newState, zip = newZipCode, user_role_id = newUserRoleId \n" +
-  //   // "WHERE user_id = userId;\n" +
-  //   "DECLARE updateQuery VARCHAR(1000);\n" +
-  //   "SET result = -1;\n" +
-  //   "    SET updateQuery = 'UPDATE users SET ';\n" +
-  //   "IF newUserName IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'username = ', newUserName, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newFirstName IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'first_name = ', newFirstName, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newLastName IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'last_name = ', newLastName, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newEmail IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'email = ', newEmail, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newPhoneNum IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'phone_number = ', newPhoneNum, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newStreetAddress IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'street_address = ', newStreetAddress, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newCity IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'city = ', newCity, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newState IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'state = ', newState, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newZipCode IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'zip = ', newZipCode, ', ');\n" +
-  //   "END IF;\n" +
-  //   "IF newUserRoleId IS NOT NULL THEN\n" +
-  //   "    SET updateQuery = CONCAT(updateQuery, 'user_role_id = ', newUserRoleId, ', ');\n" +
-  //   "END IF;\n" +
-  //   "SET updateQuery = SUBSTRING(updateQuery, 1, LENGTH(updateQuery) - 2);\n" +
-  //   "SET updateQuery = CONCAT(updateQuery, ' WHERE user_id = ', userId, ';');\n" +
-
-  //   "PREPARE stmt FROM updateQuery;\n" +
-  //   "EXECUTE stmt;\n" +
-  //   "DEALLOCATE PREPARE stmt;\n" +
-
-  //   "SELECT ROW_COUNT() INTO rowsAffected;\n" +
-  //   "IF rowsAffected > 0 THEN \n" +
-  //   "SET result = 0;\n" +
-  //   "END IF;\n" +
-  //   "END;";
   sql = "CREATE PROCEDURE IF NOT EXISTS `edit_user_details`(\n" +
     "IN userId INT,\n" +
     "IN newUserName VARCHAR(50),\n" +
@@ -997,6 +933,48 @@ function createStoredProcedures() {
       throw err;
     } else {
       console.log("database.js: procedure edit_user_details created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_reservations_by_date`(\n" +
+    "IN inputDate DATE\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT r.reservation_id, rt.reservation_type, sites.site_number, r.rv_size \n" +
+    "FROM reservations r \n" +
+    "INNER JOIN reservation_types rt ON r.reservation_type_id = rt.reservation_type_id\n" +
+    "INNER JOIN sites ON r.site_id = sites.site_id\n" +
+    "WHERE inputDate BETWEEN r.from_date AND r.to_date;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_reservations_by_date created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_reservations_by_username`(\n" +
+    "IN inputUsername VARCHAR(45)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "SELECT users.username, users.first_name, users.last_name, users.email,\n" +
+    "users.phone_number, r.reservation_id, rt.reservation_type, sites.site_number, r.rv_size \n" +
+    "FROM reservations r \n" +
+    "INNER JOIN reservation_types rt ON r.reservation_type_id = rt.reservation_type_id\n" +
+    "INNER JOIN sites ON r.site_id = sites.site_id\n" +
+    "INNER JOIN users ON r.user_id = users.user_id\n" +
+    "WHERE inputUsername = users.username;\n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_reservations_by_username created if it didn't exist");
     }
   });
 
