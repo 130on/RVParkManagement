@@ -102,7 +102,7 @@
       var type = document.getElementById("type").value;
       var maxSize = document.getElementById("maxSize");
       // Clear maxSize if Tenting or Storage is selected
-      if (type === "Tenting" || type === "Storage") {
+      if (type === "Tenting" || type === "Storage" || type === "Pop Up Trailer") {
         maxSize.value = '';
       }
       var isValid = true;
@@ -163,7 +163,7 @@
     function onPageLoad() {
       // Reset the page based on the selected type
       var type = document.getElementById("type").value;
-      if (type === "Tenting" || type === "Storage") {
+      if (type === "Tenting" || type === "Storage" || type === "Pop Up Trailer") {
         // If the type is "Tenting", hide the RV size input and clear its value and error message
         document.getElementById("maxSizeInput").style.display = "none";
         document.getElementById("maxSize").value = "";
@@ -225,6 +225,8 @@
                         >Dry
                         Camping</option>
                       <option value="Storage" <%=(formData && formData.type==='Storage' ) ? 'selected' : '' %>>Storage
+                      </option>
+                      <option value="Pop Up Trailer" <%=(formData && formData.type==='Pop Up Trailer' ) ? 'selected' : '' %>>Pop Up Trailer
                       </option>
                     </select>
                   </div>

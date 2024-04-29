@@ -233,6 +233,21 @@ function createTables() {
   });
 
 
+  sql = "CREATE TABLE IF NOT EXISTS holiday_dates (\n" +
+    "holiday_date_id INT NOT NULL AUTO_INCREMENT,\n" +
+    "holiday_date DATE NOT NULL, \n" +
+    "holiday_description VARCHAR(255), \n" +
+    "PRIMARY KEY (holiday_date_id)\n" +
+    ")";
+  con.execute(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: table holiday_dates created if it didn't exist");
+    }
+  });
+
 
 
 }
@@ -737,9 +752,13 @@ function createStoredProcedures() {
     "    AND reservations.to_date >= new_from_date\n" +
     "    AND reservation_status.status = 'Active'\n" +
     ")\n" +
+    "AND NOT EXISTS (\n" +
+    "    SELECT 1\n" +
+    "    FROM holiday_dates\n" +
+    "    WHERE holiday_dates.holiday_date BETWEEN new_from_date AND new_to_date\n" +
+    ")\n" +
     "ORDER BY sites.site_number;\n" +
     "END;";
-
 
 
   con.query(sql, function (err, results, fields) {
@@ -769,6 +788,25 @@ function createStoredProcedures() {
       console.log("database.js: procedure cancel_reservation created if it didn't exist");
     }
   });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `complete_reservation`(\n" +
+    "IN complete_reservation_id INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "UPDATE reservations \n" +
+    "SET reservation_status_id = (SELECT reservation_status_id FROM reservation_status WHERE status = 'Completed')\n" +
+    "WHERE reservation_id = complete_reservation_id; \n" +
+    "END;";
+
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure cancel_reservation created if it didn't exist");
+    }
+  });
+
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `refund_payment`(\n" +
     "IN new_reservation_id INT\n" +
@@ -803,7 +841,7 @@ function createStoredProcedures() {
       console.log(err.message);
       throw err;
     } else {
-      console.log("database.js: procedure cancel_reservation created if it didn't exist");
+      console.log("database.js: procedure get_usertype_id created if it didn't exist");
     }
   });
 
@@ -933,6 +971,61 @@ function createStoredProcedures() {
       throw err;
     } else {
       console.log("database.js: procedure edit_user_details created if it didn't exist");
+    }
+  });
+
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `insert_holiday_date`(\n" +
+    "    IN new_holiday_date DATE,\n" +
+    "    IN new_holiday_description VARCHAR(255)\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "    INSERT INTO holiday_dates(holiday_date, holiday_description)\n" +
+    "    SELECT new_holiday_date, new_holiday_description\n" +
+    "    FROM DUAL\n" +
+    "    WHERE NOT EXISTS (\n" +
+    "        SELECT *\n" +
+    "        FROM holiday_dates\n" +
+    "        WHERE holiday_dates.holiday_date = new_holiday_date\n" +
+    "        LIMIT 1\n" +
+    "    );\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure insert_holiday_date created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `delete_holiday_date`(\n" +
+    "    IN new_holiday_date_id INT\n" +
+    ")\n" +
+    "BEGIN\n" +
+    "    DELETE FROM holiday_dates WHERE holiday_date_id = new_holiday_date_id;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure delete_holiday_date created if it didn't exist");
+    }
+  });
+
+  sql = "CREATE PROCEDURE IF NOT EXISTS `get_holiday_dates`()\n" +
+    "BEGIN\n" +
+    "SELECT * \n" +
+    "FROM holiday_dates\n" +
+    "ORDER BY holiday_date;\n" +
+    "END;";
+  con.query(sql, function (err, results, fields) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    } else {
+      console.log("database.js: procedure get_holiday_dates created if it didn't exist");
     }
   });
 
@@ -1072,6 +1165,25 @@ function addDummyData() {
     console.log("database.js: Added 'Tenting' to reservation_types");
   });
 
+  sql = "CALL insert_reservation_type('Storage')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Storage' to reservation_types");
+  });
+
+  sql = "CALL insert_reservation_type('Pop Up Trailer')";
+  con.query(sql, function (err, rows) {
+    if (err) {
+      console.log(err.message);
+      throw err;
+    }
+    console.log("database.js: Added 'Pop Up Trailer' to reservation_types");
+  });
+
+
   sql = "CALL register_user('admin', 'admin', 'admin', 'admin@gmail.com', '8017753250', '757e31954b06c8c0e3b2f026d507b78a7a0f9d76e545cb70f631b0e1004f086b',\n" +
     "'0ce81db045e50d61', '5622 Park Ln. Bldg. #564', 'Hill AFB', 'UT', 84056, 'DOD Authorized Civilian',\n" +
     "'other', 'none', 'admin', @result)";
@@ -1082,35 +1194,6 @@ function addDummyData() {
     }
     console.log("database.js: Added admin account to users");
   });
-
-
-  sql = "CALL create_site('admin', 1, 39, 17, 'Active', 'RV Parking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site('admin', 3, 46, 19, 'Active', 'RV Parking', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
-  sql = "CALL create_site('admin', 2, NULL, 10, 'Active', 'Tenting', @result)";
-  con.query(sql, function (err, rows) {
-    if (err) {
-      console.log(err.message);
-      throw err;
-    }
-    console.log("database.js: Added site to sites");
-  });
-
 }
 
 module.exports = con;
