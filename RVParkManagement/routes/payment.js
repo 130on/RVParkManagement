@@ -26,6 +26,7 @@ function parseDate(dateString) {
 router.get('/', function (req, res, next) {
   console.log("payment.js: GET");
 
+  const type = req.query.type;
   const pricePerNight = req.query.pricePerNight;
   const fromDate = req.query.fromDate;
   const toDate = req.query.toDate;
@@ -34,7 +35,32 @@ router.get('/', function (req, res, next) {
   const toDateObj = parseDate(toDate);
   const oneDay = 24 * 60 * 60 * 1000;
   const daysDifference = Math.round(Math.abs((fromDateObj - toDateObj) / oneDay));
-  const amount = daysDifference * pricePerNight;
+  var amount = daysDifference * pricePerNight;
+
+  var monthInt = 0;
+  var weekInt = 0;
+  var monthPrice = 100;
+  var weekPrice = 30;
+  var dayPrice = pricePerNight; //should be $5
+  allDays = daysDifference; // we are keeping it this way as it doesnt include the first day (just making it nights)
+
+  console.log("Days Difference: " + allDays);
+  if (type == "Storage"){
+    if(Math.floor(allDays / 30) >= 1) {
+      monthInt = Math.floor(allDays / 30);
+      allDays = allDays - (monthInt * 30);
+      console.log("MonthInt: " + monthInt + ", Days Left: " + allDays);
+    }
+    if(Math.floor(allDays / 7) >= 1){
+      weekInt = Math.floor(allDays / 7);
+      allDays = allDays - (weekInt * 7);
+      console.log("WeekInt: " + weekInt + ", Days Left: " + allDays);
+    }
+    console.log("Day Price: " + dayPrice);
+    amount = (monthInt * monthPrice) + (weekInt * weekPrice) + (allDays * dayPrice) //should have less than a week of days for allDays
+    console.log("Storage price: $" + amount)
+  }
+
 
   res.render('payment', { amount });
 
@@ -76,9 +102,33 @@ router.post('/', function (req, res, next) {
   const toDateObj = parseDate(toDate);
   const oneDay = 24 * 60 * 60 * 1000;
   const daysDifference = Math.round(Math.abs((fromDateObj - toDateObj) / oneDay));
-  const amount = daysDifference * pricePerNight;
+  var amount = daysDifference * pricePerNight;
 
   const todaysDate = formatDate(new Date());
+
+  var monthInt = 0;
+  var weekInt = 0;
+  var monthPrice = 100;
+  var weekPrice = 30;
+  var dayPrice = pricePerNight; //should be $5
+  allDays = daysDifference; // we are keeping it this way as it doesnt include the first day (just making it nights)
+
+  console.log("Days Difference: " + allDays);
+  if (reservationType == "Storage"){
+    if(Math.floor(allDays / 30) >= 1) {
+      monthInt = Math.floor(allDays / 30);
+      allDays = allDays - (monthInt * 30);
+      console.log("MonthInt: " + monthInt + ", Days Left: " + allDays);
+    }
+    if(Math.floor(allDays / 7) >= 1){
+      weekInt = Math.floor(allDays / 7);
+      allDays = allDays - (weekInt * 7);
+      console.log("WeekInt: " + weekInt + ", Days Left: " + allDays);
+    }
+    console.log("Day Price: " + dayPrice);
+    amount = (monthInt * monthPrice) + (weekInt * weekPrice) + (allDays * dayPrice) //should have less than a week of days for allDays
+    console.log("Storage price: $" + amount)
+  }
 
   console.log("Parameters:", siteId, size, pricePerNight, fromDate, toDate);
 
