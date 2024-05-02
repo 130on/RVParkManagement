@@ -75,6 +75,171 @@
     }
 
     footer {
+      margin-top: auto;
+      /* Pushes the footer to the bottom */
+      background-color: #333;
+      color: #fff;
+      padding: 20px 10px;
+      /* Added padding on top */
+      text-align: center;
+    }
+
+    /* changes the color of the dropdown box if user hasn't choose a username*/
+    .select-error {
+      border-color: red;
+    }
+  </style>
+
+
+
+</head>
+
+<body>
+
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark p-3 ">
+    <a class="navbar-brand" href="#">HAFB FamCamp</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="./adminview">Home</a>
+      </li>
+    </ul>
+    <a id="profile-icon" href="/accountOverview">
+      <i class="bi bi-person-fill text-white fs-4"></i>
+    </a>
+    <form class=" my-2 my-lg-0 ml-2 mr-2">
+      <div class="col-md-12 text-center">
+        <a href="/logout"><button class="btn btn-danger text-center btn-lg bp-5" type="button">Logout</button></a>
+      </div>
+    </form>
+  </nav>
+
+
+  <header>
+    <h1>Edit Sites
+    </h1>
+  </header>
+  <main>
+    <div class="container">
+      <!-- Table to display holiday dates -->
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Site Number</th>
+            <th scope="col">Type</th>
+            <th scope="col">Max Size</th>
+            <th scope="col">Price Per Night</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <% sites.forEach(function(site) { %>
+            <tr>
+              <td>
+                <%= site.site_number %>
+              </td>
+              <td>
+                <%= site.reservation_type %>
+              </td>
+              <td>
+                <% if (site.reservation_type=="Storage" || site.reservation_type=="Pop Up Trailer" ||
+                  site.reservation_type=="Tenting" ) { %>
+                  N/A
+                  <% } else { %>
+                    <%= site.max_size %> ft
+                      <% } %>
+              </td>
+              <td>
+                $<%= site.price_per_night %>.00
+              </td>
+              <td>
+                <%= site.site_status %>
+              </td>
+              <td>
+                <form method="post">
+                  <input type="hidden" name="siteNumber" value="<%= site.site_number %>">
+                  <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+
+  <footer>
+    <p>&copy; 2024 RV Park Management</p>
+  </footer>
+
+  <!-- <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin: 10px;
+      padding: 20px;
+      text-align: center;
+      width: 250px;
+    }
+
+    .card h2 {
+      color: #333;
+    }
+
+    .card p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .card a {
+      background-color: #007bff;
+      border: none;
+      border-radius: 3px;
+      color: #fff;
+      display: inline-block;
+      padding: 10px 20px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .card a:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
       background-color: #333;
       color: #fff;
       padding: 10px;
@@ -133,8 +298,36 @@
                 <span class="text-primary"><a href="/home">Go Back?</a></span>
               </p>
             </div>
-          </form>
+          </form> 
         </div>
+        <table class="table table-bordered">
+          <thead class="thead-light">
+              <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Action</th> 
+              </tr>
+          </thead>
+          <tbody>
+            
+              <% sites.forEach(function(site) { %>
+                  <tr>
+                      <td>
+                        <%= site.site_number %>
+                      </td>
+                      <td>
+                        <%= site.reservation_type %>
+                      </td>
+                      <td>
+                          <form method="post" action="">
+                              <input type="hidden" name="siteId" value="<%= sites.site_id %>">
+                              <button type="submit" class="btn btn-primary">Edit</button>
+                          </form>
+                      </td>
+                  </tr>
+                  <% }); %>
+          </tbody>
+      </table>
       </div>
     </div>
   </div>
@@ -158,7 +351,7 @@
 
   <footer>
     <p>&copy; 2024 RV Park Management</p>
-  </footer>
+  </footer> -->
 
 
   <!-- Bootstrap scripts -->
