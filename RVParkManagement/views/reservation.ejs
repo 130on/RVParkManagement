@@ -189,17 +189,26 @@
                             <div class="text-center">
                                 <h3 class="text-dark">Make A Reservation</h3>
                             </div>
-                            <% function formatDate(dateString) { // Convert the date string to a JavaScript Date object,explicitly setting the time to noon
+                            <% function formatDate(dateString) { 
+                                // Convert the date string to a JavaScript Date object,explicitly setting the time to noon 
                                 const date=new Date(dateString + 'T12:00:00'); // Define months array 
-                                const months=['January', 'February' , 'March' , 'April'
-                                , 'May' , 'June' , 'July' , 'August' , 'September' , 'October' , 'November' , 'December']; // Get the month, day, and year const month=months[date.getMonth()]; const
-                                day=date.getDate(); const year=date.getFullYear(); // Determine the day suffix 
-                                let daySuffix='th' ; 
-                                if (day===1 || day===21 || day===31) { daySuffix='st' ; } else if
-                                (day===2 || day===22) { daySuffix='nd' ; } else if (day===3 || day===23) {
-                                daySuffix='rd' ; } // Return the formatted date string 
-                                return month + ' ' + day +
-                                daySuffix + ', ' + year; } %>
+                                const months=['January', 'February' , 'March' , 'April', 'May' , 'June' , 'July' , 'August' , 'September' , 'October' , 'November' , 'December']; 
+                                // Get the month, day, and year 
+                                const month=months[date.getMonth()];
+                                 const day=date.getDate(); 
+                                 const year=date.getFullYear(); 
+                                 // Determine the day suffix 
+                                 let daySuffix='th' ; 
+                                 if (day===1 || day===21 || day===31) { 
+                                    daySuffix='st' ; 
+                                } 
+                                else if (day===2 || day===22) { 
+                                    daySuffix='nd' ; 
+                                } 
+                                else if (day===3 || day===23) {
+                                daySuffix='rd' ; } 
+                                // Return the formatted date string 
+                                return month + ' ' + day + daySuffix + ', ' + year; } %>
                                 <% if (siteReservations.length> 0) { %>
                                     <% siteReservations.forEach(function(site) { %>
                                         <div class="reservations">
