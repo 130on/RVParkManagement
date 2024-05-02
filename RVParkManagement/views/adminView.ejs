@@ -49,6 +49,10 @@
             padding: 20px;
             text-align: center;
             width: 250px;
+            height: 20rem; /* Set a fixed height */
+            display: flex; /* Use flexbox to align items */
+            flex-direction: column; /* Stack children vertically */
+            justify-content: space-between; /* Space out children evenly */
         }
 
         .card h2 {
@@ -137,7 +141,7 @@
         <div class="card">
             <h2>Modify Reservation</h2>
             <p>Make changes to existing reservations.</p>
-            <input type="text" id="reservationId" name="reservationId" placeholder="Reservation ID">
+            <input type="text" id="reservationId" name="reservationId" placeholder="Reservation ID" class="form-control">
             <a id="reservationLink" href="#">Modify Reservation</a>
 
         </div>
@@ -171,7 +175,7 @@
 
         <div class="card">
             <h2>Generate Report</h2>
-            <p>Generate reports for insights and summary of customer reservation.</p>
+            <p>Insights and summary of customer reservations.</p>
             <select name="reports" id="reports" class="form-control">
                 <option value="" disabled selected placeholder="">Choose Report Type</option>
                 <option value="reportDay">By Date</option>

@@ -70,7 +70,7 @@ router.post('/', function (req, res, next) {
 
                 username = req.body.username !== '' ? req.body.username : req.body.placeholderUserName;
 
-                sql = "CALL edit_user_details (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result);";
+                sql = "CALL edit_user_details (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result); select @result";
                 dbCon.query(sql, [userId, username, first_name, last_name, email, phone_number, street_address,
                     city, state, zip, userRoleId], function (err, rows) {
                         if (err) {
@@ -78,16 +78,19 @@ router.post('/', function (req, res, next) {
                             throw err;
                         }
                         console.log("changeAccountInfo.js: POST - this is the content of rows: ", rows);
-                        if (rows.affectedRows > 0) {
+                        console.log("changeAccountInfo.js: POST - this is the content of rows: ",  rows[1][0]['@result']);
+                        //if (rows.affectedRows > 0) {
+                        if (rows[1][0]['@result'] === 0) {
                             console.log("changeAccountInfo.js: user's info successfully changed");
                             req.session.username = username;
                             req.session.loggedIn = true;
                             //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
                             //res.redirect(redirectUrl);
                             //res.redirect('/editAccountAdmin?userToEdit=' + username);
-                            res.redirect('accountOverview');
+                            res.redirect('changeAccountInfo');
                         }
                         else {
+                            console.log("changeAccountInfo.js: Change failed - username already exist.");
                             const redirectUrl = '/changeAccountInfo?userToEdit=' + username + '&message=' + encodeURIComponent("Failed to change info.");
                             res.redirect(redirectUrl);
                         }

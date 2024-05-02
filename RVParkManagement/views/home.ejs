@@ -64,6 +64,10 @@
             padding: 20px;
             text-align: center;
             width: 300px;
+            height: 250px; /* Set a fixed height */
+            display: flex; /* Use flexbox to align items */
+            flex-direction: column; /* Stack children vertically */
+            justify-content: space-between; /* Space out children evenly */
         }
 
         .dashboard-option h2 {
@@ -172,7 +176,7 @@
             alt="Index-Image" class="index-image">
         <div class="dashboard-options">
             <div class="dashboard-option">
-                <h2>Make Reservation</h2>
+                <h2>Make <br>Reservation</h2>
                 <p>Book your RV parking spot.</p>
                 <a href="/checkAvailability">Make Reservation</a>
             </div>
@@ -196,14 +200,14 @@
         <br>
         <br>
     </main>
-    <!-- <footer>
+    <footer>
         <p>&copy; 2024 RV Park Management</p>
-    </footer> -->
-    <div class="card text-center text-white bg-secondary ">
+    </footer>
+    <!-- <div class="card text-center text-white bg-secondary ">
         <div class="card-header">
             <p>&copy; 2024 RV Park Management</p>
         </div>
-    </div>
+    </div> -->
 
     <!-- Bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

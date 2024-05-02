@@ -896,74 +896,58 @@ function createStoredProcedures() {
     ")\n" +
     "BEGIN\n" +
     "DECLARE rowsAffected INT;\n" +
-
-    "SET result = 1;\n" +
-
-    "UPDATE users\n" +
-    "SET \n" +
-    "username = CASE\n" +
-    "WHEN newUserName IS NOT NULL THEN newUserName\n" +
-    "ELSE username\n" +
-    "END,\n" +
-    "first_name = CASE\n" +
-    "WHEN newFirstName IS NOT NULL THEN newFirstName\n" +
-    "ELSE first_name\n" +
-    "END,\n" +
-    "last_name = CASE\n" +
-    "WHEN newLastName IS NOT NULL THEN newLastName\n" +
-    "ELSE last_name\n" +
-    "END,\n" +
-    "email = CASE\n" +
-    "WHEN newEmail IS NOT NULL THEN newEmail\n" +
-    "ELSE email\n" +
-    "END,\n" +
-    "phone_number = CASE\n" +
-    "WHEN newPhoneNum IS NOT NULL THEN newPhoneNum\n" +
-    "ELSE phone_number\n" +
-    "END,\n" +
-    "street_address = CASE\n" +
-    "WHEN newStreetAddress IS NOT NULL THEN newStreetAddress\n" +
-    "ELSE street_address\n" +
-    "END,\n" +
-    "city = CASE\n" +
-    "WHEN newCity IS NOT NULL THEN newCity\n" +
-    "ELSE city\n" +
-    "END,\n" +
-    "state = CASE\n" +
-    "WHEN newState IS NOT NULL THEN newState\n" +
-    "ELSE state\n" +
-    "END,\n" +
-    "zip = CASE\n" +
-    "WHEN newZipCode IS NOT NULL THEN newZipCode\n" +
-    "ELSE zip\n" +
-    "END,\n" +
-    "user_role_id = CASE\n" +
-    "WHEN newUserRoleId IS NOT NULL THEN newUserRoleId\n" +
-    "ELSE user_role_id\n" +
-    "END\n" +
-    "WHERE user_id = userId;\n" +
-
-
-    // "UPDATE users\n" +
-    // "SET \n" +
-    // "username = IFNULL(newUserName, username),\n" +
-    // "first_name = IFNULL(newFirstName, first_name),\n" +
-    // "last_name = IFNULL(newLastName, last_name),\n" +
-    // "email = IFNULL(newEmail, email),\n" +
-    // "phone_number = IFNULL(newPhoneNum, phone_number),\n" +
-    // "street_address = IFNULL(newStreetAddress, street_address),\n" +
-    // "city = IFNULL(newCity, city),\n" +
-    // "state = IFNULL(newState, state),\n" +
-    // "zip = IFNULL(newZipCode, zip),\n" +
-    // "user_role_id = IFNULL(newUserRoleId, user_role_id)\n" +
-    // "WHERE user_id = userId;\n" +
-
-    // -- Get the number of rows affected by the update
-    // "SELECT ROW_COUNT() INTO rowsAffected;\n" +
-
-    // "IF rowsAffected > 0 THEN \n" +
-    // "SET result = 0;\n" +
-    // "END IF;"
+    "DECLARE usernameCount INT;\n" +
+    "SET result = 0;\n" +
+    "SELECT COUNT(*) INTO usernameCount\n" +
+    "FROM users\n" +
+    "WHERE username = newUserName;\n" +
+    "IF usernameCount > 0 THEN\n" +
+    "    SET result = 1;\n" +
+    "ELSE\n" +
+        "UPDATE users\n" +
+        "SET \n" +
+        "username = CASE\n" +
+        "WHEN newUserName IS NOT NULL THEN newUserName\n" +
+        "ELSE username\n" +
+        "END,\n" +
+        "first_name = CASE\n" +
+        "WHEN newFirstName IS NOT NULL THEN newFirstName\n" +
+        "ELSE first_name\n" +
+        "END,\n" +
+        "last_name = CASE\n" +
+        "WHEN newLastName IS NOT NULL THEN newLastName\n" +
+        "ELSE last_name\n" +
+        "END,\n" +
+        "email = CASE\n" +
+        "WHEN newEmail IS NOT NULL THEN newEmail\n" +
+        "ELSE email\n" +
+        "END,\n" +
+        "phone_number = CASE\n" +
+        "WHEN newPhoneNum IS NOT NULL THEN newPhoneNum\n" +
+        "ELSE phone_number\n" +
+        "END,\n" +
+        "street_address = CASE\n" +
+        "WHEN newStreetAddress IS NOT NULL THEN newStreetAddress\n" +
+        "ELSE street_address\n" +
+        "END,\n" +
+        "city = CASE\n" +
+        "WHEN newCity IS NOT NULL THEN newCity\n" +
+        "ELSE city\n" +
+        "END,\n" +
+        "state = CASE\n" +
+        "WHEN newState IS NOT NULL THEN newState\n" +
+        "ELSE state\n" +
+        "END,\n" +
+        "zip = CASE\n" +
+        "WHEN newZipCode IS NOT NULL THEN newZipCode\n" +
+        "ELSE zip\n" +
+        "END,\n" +
+        "user_role_id = CASE\n" +
+        "WHEN newUserRoleId IS NOT NULL THEN newUserRoleId\n" +
+        "ELSE user_role_id\n" +
+        "END\n" +
+        "WHERE user_id = userId;\n" +
+    "END IF;\n" +
     "END;"
   con.query(sql, function (err, results, fields) {
     if (err) {
@@ -973,6 +957,79 @@ function createStoredProcedures() {
       console.log("database.js: procedure edit_user_details created if it didn't exist");
     }
   });
+
+
+  // sql = "CREATE PROCEDURE IF NOT EXISTS `edit_user_details`(\n" +
+  //   "IN userId INT,\n" +
+  //   "IN newUserName VARCHAR(50),\n" +
+  //   "IN newFirstName VARCHAR(50),\n" +
+  //   "IN newLastName VARCHAR(50),\n" +
+  //   "IN newEmail VARCHAR(50),\n" +
+  //   "IN newPhoneNum VARCHAR(40),\n" +
+  //   "IN newStreetAddress VARCHAR(255),\n" +
+  //   "IN newCity VARCHAR(40),\n" +
+  //   "IN newState VARCHAR(40),\n" +
+  //   "IN newZipCode VARCHAR(10),\n" +
+  //   "IN newUserRoleId INT,\n" +
+  //   "OUT result INT\n" +
+  //   ")\n" +
+  //   "BEGIN\n" +
+  //   "DECLARE rowsAffected INT;\n" +
+
+  //   "SET result = 1;\n" +
+
+  //   "UPDATE users\n" +
+  //   "SET \n" +
+  //   "username = CASE\n" +
+  //   "WHEN newUserName IS NOT NULL THEN newUserName\n" +
+  //   "ELSE username\n" +
+  //   "END,\n" +
+  //   "first_name = CASE\n" +
+  //   "WHEN newFirstName IS NOT NULL THEN newFirstName\n" +
+  //   "ELSE first_name\n" +
+  //   "END,\n" +
+  //   "last_name = CASE\n" +
+  //   "WHEN newLastName IS NOT NULL THEN newLastName\n" +
+  //   "ELSE last_name\n" +
+  //   "END,\n" +
+  //   "email = CASE\n" +
+  //   "WHEN newEmail IS NOT NULL THEN newEmail\n" +
+  //   "ELSE email\n" +
+  //   "END,\n" +
+  //   "phone_number = CASE\n" +
+  //   "WHEN newPhoneNum IS NOT NULL THEN newPhoneNum\n" +
+  //   "ELSE phone_number\n" +
+  //   "END,\n" +
+  //   "street_address = CASE\n" +
+  //   "WHEN newStreetAddress IS NOT NULL THEN newStreetAddress\n" +
+  //   "ELSE street_address\n" +
+  //   "END,\n" +
+  //   "city = CASE\n" +
+  //   "WHEN newCity IS NOT NULL THEN newCity\n" +
+  //   "ELSE city\n" +
+  //   "END,\n" +
+  //   "state = CASE\n" +
+  //   "WHEN newState IS NOT NULL THEN newState\n" +
+  //   "ELSE state\n" +
+  //   "END,\n" +
+  //   "zip = CASE\n" +
+  //   "WHEN newZipCode IS NOT NULL THEN newZipCode\n" +
+  //   "ELSE zip\n" +
+  //   "END,\n" +
+  //   "user_role_id = CASE\n" +
+  //   "WHEN newUserRoleId IS NOT NULL THEN newUserRoleId\n" +
+  //   "ELSE user_role_id\n" +
+  //   "END\n" +
+  //   "WHERE user_id = userId;\n" +
+  //   "END;"
+  // con.query(sql, function (err, results, fields) {
+  //   if (err) {
+  //     console.log(err.message);
+  //     throw err;
+  //   } else {
+  //     console.log("database.js: procedure edit_user_details created if it didn't exist");
+  //   }
+  // });
 
 
   sql = "CREATE PROCEDURE IF NOT EXISTS `insert_holiday_date`(\n" +

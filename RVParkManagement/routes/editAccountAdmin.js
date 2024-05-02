@@ -92,7 +92,7 @@ router.post('/', function (req, res, next) {
 
                 username = req.body.username !== '' ? req.body.username : req.body.placeholderUserName;
 
-                sql = "CALL edit_user_details (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result);";
+                sql = "CALL edit_user_details (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result); select @result";
                 dbCon.query(sql, [userId, username, first_name, last_name, email, phone_number, street_address,
                     city, state, zip, userRoleId], function (err, rows) {
                         if (err) {
@@ -100,7 +100,10 @@ router.post('/', function (req, res, next) {
                             throw err;
                         }
                         console.log("editAccountAdmin.js: POST - this is the content of rows: ", rows);
-                        if (rows.affectedRows > 0) {
+                        console.log("editAccountAdmin.js: POST - this is the content of result: ", rows[1][0]['@result']);
+                        
+                        //if (rows.affectedRows > 0) {
+                        if (rows[1][0]['@result'] === 1) {
                             console.log("editAccountAdmin.js: user's info successfully changed");
                             //const redirectUrl = '/editAccountAdmin?userToEdit=' + username + '&message=' + encodeURIComponent("Info changed successfully!");
                             //res.redirect(redirectUrl);
@@ -112,16 +115,12 @@ router.post('/', function (req, res, next) {
                             res.redirect(redirectUrl);
                         }
                     });
-
             } else {
                 console.log("No userId found with the username provided");
                 console.log("This is the userName: ", username);
                 res.redirect('/editAccountAdmin?userToEdit=' + username);
-
             }
         });
-
-
     }
 
     else if (formType === "passwordForm") {
