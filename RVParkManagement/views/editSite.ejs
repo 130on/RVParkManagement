@@ -204,7 +204,8 @@
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-p-circle-fill text-white"></i></span>
                     <select class="form-select" id="type" name="type" onchange="showRVSizeInput()">
-                      <option value="RV Parking" <% if (site[0].reservation_type==='RV Parking' ) { %>selected <% } %>>RV
+                      <option value="RV Parking" <% if (site[0].reservation_type==='RV Parking' ) { %>selected <% } %>
+                          >RV
                           Parking</option>
                       <option value="Tenting" <% if (site[0].reservation_type==='Tenting' ) { %>selected <% } %>>Tenting
                       </option>
@@ -212,7 +213,8 @@
                           >Dry Camping</option>
                       <option value="Storage" <% if (site[0].reservation_type==='Storage' ) { %>selected <% } %>>Storage
                       </option>
-                      <option value="Pop Up Trailer" <% if (site[0].reservation_type==='Pop Up Trailer' ) { %>selected <% } %>>Pop Up Trailer
+                      <option value="Pop Up Trailer" <% if (site[0].reservation_type==='Pop Up Trailer' ) { %>selected
+                        <% } %>>Pop Up Trailer
                       </option>
                     </select>
                   </div>
@@ -231,7 +233,7 @@
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-asterisk text-white"></i></span>
                     <select class="form-select" id="siteStatus" name="siteStatus"">
-                      <option value="Active" <% if (site[0].site_status==='Active' ) { %>selected <% } %>>Active
+                      <option value=" Active" <% if (site[0].site_status==='Active' ) { %>selected <% } %>>Active
                         </option>
                         <option value="Closed" <% if (site[0].site_status==='Closed' ) { %>selected <% } %>>Closed
                         </option>

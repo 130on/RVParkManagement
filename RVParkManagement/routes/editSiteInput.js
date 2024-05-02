@@ -8,7 +8,16 @@ var dbCon = require('../lib/database');
 router.get('/', function (req, res, next) {
   console.log("editSiteInput.js: GET");
 
-  res.render('editSiteInput', {});
+  let sql = "SELECT * FROM sites JOIN reservation_types ON reservation_types.reservation_type_id = sites.reservation_type_id ORDER BY sites.site_number ASC;";
+  dbCon.query(sql, function (err, results) {
+      if (err) {
+          console.log("editSiteInput.js: Query to get sites failed");
+          throw err;
+      }
+      console.log("Fetched sites:", results);
+      // Pass the fetched sites to the EJS template
+      res.render('editSiteInput', { sites: results });
+  });
 
   // var userId;
   // let sql = "SELECT user_id\n" +
@@ -23,7 +32,7 @@ router.post('/', function (req, res, next) {
 
   const siteNumber = req.body.siteNumber;
 
-  console.log("Parameters:", siteNumber);
+  console.log("Parameters: ", siteNumber);
 
   res.redirect('editSite?siteNumber=' + siteNumber);
 

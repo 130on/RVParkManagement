@@ -55,7 +55,7 @@ router.post('/', function (req, res, next) {
       console.log("editSite.js: Successful site addition");
 
       // Redirect the user to the home page.  Let that redirect the user to the next correct spot.
-      res.redirect('removeSite?siteNumber=' + siteNumber);
+      res.redirect('editSiteInput');
 
     } else if (rows[1][0]['@result'] == 1) {
       console.log("editSite.js: That Site Number already exists.  Reload editSite page with that message.");
