@@ -184,8 +184,13 @@
     }
 
     function isValidDate(date) {
-      // Check if date is valid and in the future
-      return date instanceof Date && !isNaN(date) && date > new Date();
+      if (!(date instanceof Date) || isNaN(date)) return false;
+      
+      // Create a new date object for the current date with time set to midnight
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);  // Reset hours, minutes, seconds, and milliseconds to zero
+    
+      return date >= today;
     }
 
     function goBack() {
@@ -283,7 +288,7 @@
                   <div id="priceInput" class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-currency-dollar text-white"></i></span>
                     <input type="text" class="form-control" id="pricePerNight" name="pricePerNight"
-                      placeholder="Price Per Night">
+                      placeholder="Price Limit">
                     <p id="priceError" class="text-danger" style="height:25px"></p>
                   </div>
                   <div id="fromDateInput" class="input-group mb-3">
