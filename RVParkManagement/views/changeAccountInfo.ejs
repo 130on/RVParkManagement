@@ -66,11 +66,9 @@
                 let hashed = CryptoJS.SHA256(password1 + ":" + salt).toString(CryptoJS.enc.Hex);
                 document.getElementById("hash").value = hashed;
             }
-
         }
-
         function goBack() {
-            window.location.href = '/accountOverview'; // Navigate back
+            window.location.href = "./home";
         }
     </script>
 </head>
